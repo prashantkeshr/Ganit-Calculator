@@ -2,71 +2,389 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Calculator ~ by Ganit Technology — JavaScript API",
-    "description": "The window.Ganit JavaScript API exposed by the Calculator application. All operations run in-browser with no network calls.",
+    "description": "The `window.Ganit` JavaScript API exposed by the Calculator web application at https://ganit.dhurta.com. All operations run entirely in-browser with zero network calls. No API key required.",
     "version": "0.1.0-beta",
     "contact": {
       "name": "Dhurta Organisation",
-      "url": "https://dhurta.org"
+      "url": "https://dhurta.org",
+      "email": "hello@dhurta.org"
     },
-    "license": { "name": "MIT" }
+    "license": { "name": "MIT", "url": "https://opensource.org/licenses/MIT" },
+    "x-logo": { "url": "https://ganit.dhurta.com/assets/brand/ganit.png" }
+  },
+  "externalDocs": {
+    "description": "LLM-friendly plain-text docs (llms.txt)",
+    "url": "https://ganit.dhurta.com/llms.txt"
   },
   "servers": [
-    { "url": "javascript:window.Ganit", "description": "In-browser JavaScript API (no HTTP server)" }
+    {
+      "url": "javascript:window.Ganit",
+      "description": "In-browser JavaScript API (no HTTP server). Load the app at https://ganit.dhurta.com first, then call window.Ganit.*"
+    }
+  ],
+  "tags": [
+    { "name": "core",         "description": "Core arithmetic and expression evaluation" },
+    { "name": "scientific",   "description": "Scientific math — trig, log, factorial, combinatorics" },
+    { "name": "financial",    "description": "Financial calculations — loan, compound interest, ROI" },
+    { "name": "health",       "description": "Health metrics — BMI, BMR, body fat, water intake" },
+    { "name": "percentage",   "description": "Percentage tools — of, change, discount, markup" },
+    { "name": "format",       "description": "Number and currency formatting utilities" }
   ],
   "paths": {
     "/calculate": {
-      "description": "Evaluate any mathematical expression",
-      "x-js": "window.Ganit.calculate(expression, options)",
-      "parameters": [
-        { "name": "expression", "in": "query", "required": true, "schema": { "type": "string", "example": "2 + 2 * sin(30)" } },
-        { "name": "angleMode", "in": "query", "schema": { "type": "string", "enum": ["DEG", "RAD", "GRAD"], "default": "DEG" } }
-      ]
+      "summary": "Evaluate a mathematical expression",
+      "description": "Evaluates any mathematical expression using the shunting-yard algorithm (no eval). Supports arithmetic, trig (DEG/RAD/GRAD), logs, and memory functions.",
+      "x-js": "window.Ganit.calculate(expression, options?)",
+      "x-example": "window.Ganit.calculate('2 + 2 * sin(30)', { angleMode: 'DEG' })",
+      "tags": ["core"],
+      "get": {
+        "parameters": [
+          { "name": "expression", "in": "query", "required": true, "description": "Mathematical expression string", "schema": { "type": "string", "example": "2 + 2 * sin(30)" } },
+          { "name": "angleMode",  "in": "query", "schema": { "type": "string", "enum": ["DEG", "RAD", "GRAD"], "default": "DEG" } }
+        ],
+        "responses": {
+          "200": { "description": "Calculation result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiResponse" } } } }
+        }
+      }
+    },
+    "/scientific/sin": {
+      "summary": "Sine function",
+      "x-js": "window.Ganit.scientific.sin(value, angleMode?)",
+      "tags": ["scientific"],
+      "get": {
+        "parameters": [
+          { "name": "value",     "in": "query", "required": true, "schema": { "type": "number", "example": 30 } },
+          { "name": "angleMode", "in": "query", "schema": { "type": "string", "enum": ["DEG","RAD","GRAD"], "default": "DEG" } }
+        ],
+        "responses": { "200": { "description": "Sine result", "content": { "application/json": { "schema": { "type": "number", "example": 0.5 } } } } }
+      }
+    },
+    "/scientific/cos": {
+      "summary": "Cosine function",
+      "x-js": "window.Ganit.scientific.cos(value, angleMode?)",
+      "tags": ["scientific"],
+      "get": {
+        "parameters": [
+          { "name": "value", "in": "query", "required": true, "schema": { "type": "number", "example": 0 } },
+          { "name": "angleMode", "in": "query", "schema": { "type": "string", "enum": ["DEG","RAD","GRAD"], "default": "DEG" } }
+        ],
+        "responses": { "200": { "description": "Cosine result", "content": { "application/json": { "schema": { "type": "number", "example": 1 } } } } }
+      }
+    },
+    "/scientific/factorial": {
+      "summary": "Factorial of n",
+      "x-js": "window.Ganit.scientific.factorial(n)",
+      "tags": ["scientific"],
+      "get": {
+        "parameters": [
+          { "name": "n", "in": "query", "required": true, "schema": { "type": "integer", "minimum": 0, "maximum": 170, "example": 10 } }
+        ],
+        "responses": { "200": { "description": "Factorial result", "content": { "application/json": { "schema": { "type": "number", "example": 3628800 } } } } }
+      }
+    },
+    "/scientific/log": {
+      "summary": "Logarithm (base 10)",
+      "x-js": "window.Ganit.scientific.log(value)",
+      "tags": ["scientific"],
+      "get": {
+        "parameters": [
+          { "name": "value", "in": "query", "required": true, "schema": { "type": "number", "example": 1000 } }
+        ],
+        "responses": { "200": { "description": "Log base 10 result", "content": { "application/json": { "schema": { "type": "number", "example": 3 } } } } }
+      }
     },
     "/financial/loan": {
-      "description": "Loan amortization calculator",
+      "summary": "Loan / EMI amortization calculator",
       "x-js": "window.Ganit.financial.loan({ principal, annualRate, months, startDate? })",
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "principal": { "type": "number", "description": "Loan amount", "example": 100000 },
-                "annualRate": { "type": "number", "description": "Annual interest rate %", "example": 7.5 },
-                "months": { "type": "integer", "description": "Loan term in months", "example": 240 }
-              },
-              "required": ["principal", "annualRate", "months"]
+      "tags": ["financial"],
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["principal", "annualRate", "months"],
+                "properties": {
+                  "principal":  { "type": "number",  "description": "Loan principal amount",            "example": 500000 },
+                  "annualRate": { "type": "number",  "description": "Annual interest rate in percent",  "example": 8.5 },
+                  "months":     { "type": "integer", "description": "Loan term in months",              "example": 240 },
+                  "startDate":  { "type": "string",  "description": "ISO date for schedule start",      "example": "2026-01-01" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Loan calculation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "monthlyPayment":  { "type": "number", "description": "Monthly EMI",           "example": 4340.87 },
+                    "totalPaid":       { "type": "number", "description": "Total amount paid",     "example": 1041808.8 },
+                    "totalInterest":   { "type": "number", "description": "Total interest paid",   "example": 541808.8 },
+                    "schedule":        { "type": "array",  "description": "Month-by-month amortization schedule" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/financial/compound": {
+      "summary": "Compound interest calculator",
+      "x-js": "window.Ganit.financial.compound({ principal, rate, years, n? })",
+      "tags": ["financial"],
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["principal", "rate", "years"],
+                "properties": {
+                  "principal": { "type": "number",  "example": 10000 },
+                  "rate":      { "type": "number",  "description": "Annual interest rate %", "example": 10 },
+                  "years":     { "type": "number",  "example": 5 },
+                  "n":         { "type": "integer", "description": "Compounding frequency per year (1=annually, 12=monthly)", "default": 1, "example": 12 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Compound interest result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "amount":        { "type": "number", "example": 16453.09 },
+                    "interest":      { "type": "number", "example": 6453.09 },
+                    "effectiveRate": { "type": "number", "description": "Effective annual rate %", "example": 10.47 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/financial/roi": {
+      "summary": "ROI and CAGR calculator",
+      "x-js": "window.Ganit.financial.roi({ initial, final, years? })",
+      "tags": ["financial"],
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["initial", "final"],
+                "properties": {
+                  "initial": { "type": "number", "example": 1000 },
+                  "final":   { "type": "number", "example": 1500 },
+                  "years":   { "type": "number", "example": 3 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ROI result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "roi":  { "type": "number", "description": "ROI percentage",  "example": 50 },
+                    "cagr": { "type": "number", "description": "CAGR percentage", "example": 14.47 }
+                  }
+                }
+              }
             }
           }
         }
       }
     },
     "/health/bmi": {
-      "description": "BMI calculator",
-      "x-js": "window.Ganit.health.bmi({ weight, height, unit })",
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "weight": { "type": "number", "example": 70 },
-                "height": { "type": "number", "example": 175 },
-                "unit": { "type": "string", "enum": ["metric", "imperial"], "default": "metric" }
-              },
-              "required": ["weight", "height"]
+      "summary": "Body Mass Index calculator",
+      "x-js": "window.Ganit.health.bmi({ weight, height, unit? })",
+      "tags": ["health"],
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["weight", "height"],
+                "properties": {
+                  "weight": { "type": "number", "description": "Weight in kg (metric) or lbs (imperial)", "example": 70 },
+                  "height": { "type": "number", "description": "Height in cm (metric) or inches (imperial)", "example": 175 },
+                  "unit":   { "type": "string", "enum": ["metric", "imperial"], "default": "metric" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "BMI result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "bmi":       { "type": "number", "example": 22.86 },
+                    "category":  { "type": "string", "example": "Normal weight" },
+                    "idealRange": {
+                      "type": "object",
+                      "properties": {
+                        "min": { "type": "number", "example": 56.69 },
+                        "max": { "type": "number", "example": 76.29 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/bmr": {
+      "summary": "Basal Metabolic Rate and TDEE calculator",
+      "x-js": "window.Ganit.health.bmr({ weight, height, age, gender, unit? })",
+      "tags": ["health"],
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["weight", "height", "age", "gender"],
+                "properties": {
+                  "weight": { "type": "number", "example": 70 },
+                  "height": { "type": "number", "example": 175 },
+                  "age":    { "type": "integer", "example": 30 },
+                  "gender": { "type": "string", "enum": ["male","female"], "example": "male" },
+                  "unit":   { "type": "string", "enum": ["metric","imperial"], "default": "metric" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "BMR and TDEE result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "bmr": { "type": "number", "description": "Basal Metabolic Rate (calories/day)", "example": 1695 },
+                    "tdee": {
+                      "type": "object",
+                      "properties": {
+                        "sedentary":    { "type": "number", "example": 2034 },
+                        "light":        { "type": "number", "example": 2321 },
+                        "moderate":     { "type": "number", "example": 2609 },
+                        "active":       { "type": "number", "example": 2896 },
+                        "very_active":  { "type": "number", "example": 3184 }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
       }
     },
     "/percentage/of": {
-      "description": "Calculate X% of Y",
+      "summary": "Calculate X% of Y",
       "x-js": "window.Ganit.percentage.of(percent, value)",
-      "parameters": [
-        { "name": "percent", "in": "query", "required": true, "schema": { "type": "number", "example": 15 } },
-        { "name": "value",   "in": "query", "required": true, "schema": { "type": "number", "example": 200 } }
-      ]
+      "tags": ["percentage"],
+      "get": {
+        "parameters": [
+          { "name": "percent", "in": "query", "required": true, "schema": { "type": "number", "example": 15 } },
+          { "name": "value",   "in": "query", "required": true, "schema": { "type": "number", "example": 200 } }
+        ],
+        "responses": { "200": { "description": "Percentage result", "content": { "application/json": { "schema": { "type": "number", "example": 30 } } } } }
+      }
+    },
+    "/percentage/change": {
+      "summary": "Percentage change between two values",
+      "x-js": "window.Ganit.percentage.change(from, to)",
+      "tags": ["percentage"],
+      "get": {
+        "parameters": [
+          { "name": "from", "in": "query", "required": true, "schema": { "type": "number", "example": 80 } },
+          { "name": "to",   "in": "query", "required": true, "schema": { "type": "number", "example": 100 } }
+        ],
+        "responses": { "200": { "description": "Percent change", "content": { "application/json": { "schema": { "type": "number", "description": "Positive = increase, negative = decrease", "example": 25 } } } } }
+      }
+    },
+    "/percentage/discount": {
+      "summary": "Apply a discount percentage",
+      "x-js": "window.Ganit.percentage.discount(originalPrice, discountPercent)",
+      "tags": ["percentage"],
+      "get": {
+        "parameters": [
+          { "name": "price",    "in": "query", "required": true, "schema": { "type": "number", "example": 500 } },
+          { "name": "discount", "in": "query", "required": true, "schema": { "type": "number", "example": 20 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Discount result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "discounted": { "type": "number", "example": 400 },
+                    "saved":      { "type": "number", "example": 100 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/format/number": {
+      "summary": "Format a number with locale-aware separators",
+      "x-js": "window.Ganit.format.number(value, locale?)",
+      "tags": ["format"],
+      "get": {
+        "parameters": [
+          { "name": "value",  "in": "query", "required": true, "schema": { "type": "number", "example": 1234567.89 } },
+          { "name": "locale", "in": "query", "schema": { "type": "string", "default": "en-US", "example": "en-IN" } }
+        ],
+        "responses": { "200": { "description": "Formatted number string", "content": { "application/json": { "schema": { "type": "string", "example": "12,34,567.89" } } } } }
+      }
+    },
+    "/format/currency": {
+      "summary": "Format a number as a currency string",
+      "x-js": "window.Ganit.format.currency(value, currencyCode?)",
+      "tags": ["format"],
+      "get": {
+        "parameters": [
+          { "name": "value",        "in": "query", "required": true, "schema": { "type": "number", "example": 99.99 } },
+          { "name": "currencyCode", "in": "query", "schema": { "type": "string", "default": "USD", "example": "INR" } }
+        ],
+        "responses": { "200": { "description": "Formatted currency string", "content": { "application/json": { "schema": { "type": "string", "example": "₹99.99" } } } } }
+      }
     }
   },
   "components": {
@@ -74,15 +392,15 @@
       "ApiResponse": {
         "type": "object",
         "properties": {
-          "result": { "description": "Numeric result" },
-          "formatted": { "type": "string", "description": "Formatted result string" },
+          "result":    { "description": "Numeric result of the operation" },
+          "formatted": { "type": "string", "description": "Human-readable formatted result string" },
           "meta": {
             "type": "object",
             "properties": {
-              "tool": { "type": "string" },
-              "version": { "type": "string" },
-              "brand": { "type": "string" },
-              "timestamp": { "type": "number" }
+              "tool":      { "type": "string",  "example": "basic" },
+              "version":   { "type": "string",  "example": "0.1.0-beta" },
+              "brand":     { "type": "string",  "example": "Ganit Technology" },
+              "timestamp": { "type": "number",  "description": "Unix timestamp in ms" }
             }
           }
         }

@@ -1,25 +1,27 @@
 {
   "name": "@ganit/calculator",
   "version": "0.1.0",
-  "description": "Calculator ~ by Ganit Technology. Universal privacy-first offline calculator platform. 45+ tools, 18 categories.",
+  "description": "Calculator ~ by Ganit Technology. Universal privacy-first offline calculator platform. 55+ tools, 18 categories.",
   "private": false,
   "license": "MIT",
   "author": {
     "name": "Dhurta Organisation",
     "url": "https://dhurta.org"
   },
-  "homepage": "https://ganit.dhurta.org",
+  "homepage": "https://ganit.dhurta.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dhurta-org/ganit-calculator"
+    "url": "https://github.com/prashantkeshr/Ganit-Calculator"
   },
   "bugs": {
-    "url": "https://github.com/dhurta-org/ganit-calculator/issues"
+    "url": "https://github.com/prashantkeshr/Ganit-Calculator/issues"
   },
   "keywords": [
-    "calculator", "scientific-calculator", "financial-calculator",
-    "unit-converter", "offline", "pwa", "progressive-web-app",
-    "ganit", "dhurta", "math", "statistics", "matrix"
+    "calculator", "scientific-calculator", "financial-calculator", "loan-calculator",
+    "bmi-calculator", "unit-converter", "currency-converter", "statistics-calculator",
+    "offline", "pwa", "progressive-web-app", "ganit", "dhurta",
+    "math", "statistics", "matrix", "equation-solver", "physics-calculator",
+    "construction-calculator", "programmer-tools", "privacy-first", "no-tracking"
   ],
   "type": "module",
   "scripts": {

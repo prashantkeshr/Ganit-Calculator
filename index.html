@@ -3,15 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculator ~ by Ganit Technology</title>
-  <meta name="description" content="A universal, privacy-first, offline-capable calculator platform. 45+ calculators across 18 categories. No tracking, no ads, no data collection." />
+  <title>Calculator ~ by Ganit Technology | Free Online Calculator</title>
+  <meta name="description" content="Free online calculator platform by Ganit Technology. 55+ calculators: scientific, financial (EMI/loan), BMI, statistics, unit conversion, currency, physics, and more. Privacy-first, offline-capable, no ads." />
+  <meta name="keywords" content="calculator, online calculator, scientific calculator, BMI calculator, loan calculator, EMI calculator, currency converter, percentage calculator, unit converter, statistics calculator, financial calculator, Ganit Technology, Dhurta" />
   <meta name="author" content="Ganit Technology — Powered by Dhurta Organisation" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://ganit.dhurta.com/" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Calculator ~ by Ganit Technology" />
-  <meta property="og:description" content="Universal privacy-first calculator. 45+ tools, offline-first, no tracking." />
+  <meta property="og:title" content="Calculator ~ by Ganit Technology | 55+ Free Online Calculators" />
+  <meta property="og:description" content="Universal privacy-first calculator. Scientific, financial, health, statistics, programmer tools and more. Offline-first PWA. No tracking, no ads." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="assets/brand/ganit.png" />
+  <meta property="og:url" content="https://ganit.dhurta.com/" />
+  <meta property="og:image" content="https://ganit.dhurta.com/assets/brand/ganit.png" />
+  <meta property="og:image:width" content="590" />
+  <meta property="og:image:height" content="587" />
+  <meta property="og:image:alt" content="Ganit Calculator — by Ganit Technology" />
+  <meta property="og:site_name" content="Ganit Calculator" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@dhurta_org" />
+  <meta name="twitter:creator" content="@dhurta_org" />
+  <meta name="twitter:title" content="Calculator ~ by Ganit Technology | 55+ Free Online Calculators" />
+  <meta name="twitter:description" content="Universal privacy-first calculator platform. Scientific, financial, health, statistics, programmer tools. Offline-first. No ads, no tracking." />
+  <meta name="twitter:image" content="https://ganit.dhurta.com/assets/brand/ganit.png" />
+  <meta name="twitter:image:alt" content="Ganit Calculator" />
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.webmanifest" />
@@ -41,17 +61,142 @@
   <link rel="stylesheet" href="css/rtl.css" />
   <link rel="stylesheet" href="css/print.css" media="print" />
 
-  <!-- JSON-LD -->
+  <!-- Sitemap reference -->
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+  <!-- AI discovery -->
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable documentation" />
+
+  <!-- JSON-LD — WebApplication -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Calculator ~ by Ganit Technology",
-    "description": "Universal privacy-first calculator platform with 45+ tools across 18 categories.",
+    "alternateName": "Ganit Calculator",
+    "description": "Universal privacy-first browser-based calculator platform with 55+ tools across 18 categories. Scientific, financial, health, statistics, programmer, construction, physics calculators. Offline-first PWA.",
+    "url": "https://ganit.dhurta.com/",
     "applicationCategory": "UtilitiesApplication",
-    "operatingSystem": "Any (browser-based)",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "author": { "@type": "Organization", "name": "Ganit Technology", "parentOrganization": { "@type": "Organization", "name": "Dhurta Organisation" } }
+    "applicationSubCategory": "Calculator",
+    "operatingSystem": "Any — browser-based, no install required",
+    "browserRequirements": "Requires JavaScript. Works in Chrome, Firefox, Safari, Edge.",
+    "softwareVersion": "0.1.0-beta",
+    "datePublished": "2025-09-21",
+    "dateModified": "2026-09-21",
+    "inLanguage": ["en","hi","ar","fr","de","es","pt","ja","ko","zh","ru","it","nl","tr","pl","sv","da","fi","no","vi","id","th","uk","fa"],
+    "isAccessibleForFree": true,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "Ganit Technology",
+      "url": "https://ganit.dhurta.com",
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "Dhurta Organisation",
+        "url": "https://dhurta.org"
+      }
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "Ganit Technology",
+      "url": "https://ganit.dhurta.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Dhurta Organisation",
+      "url": "https://dhurta.org",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://ganit.dhurta.com/assets/brand/ganit.png"
+      }
+    },
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://ganit.dhurta.com/assets/brand/ganit.png",
+      "width": 590,
+      "height": 587
+    },
+    "screenshot": "https://ganit.dhurta.com/assets/brand/ganit.png",
+    "license": "https://opensource.org/licenses/MIT",
+    "featureList": [
+      "Basic arithmetic calculator",
+      "Scientific calculator with trigonometry",
+      "Financial calculator — loan EMI, compound interest, ROI",
+      "Currency converter with 90+ currencies",
+      "BMI and health metrics calculator",
+      "Statistics and probability calculator",
+      "Physics formula solver",
+      "Programmer tools — base converter, hash, UUID, color",
+      "Construction calculators",
+      "Date and time tools",
+      "Equation solver — linear, quadratic, cubic",
+      "Matrix calculator",
+      "Graph plotter",
+      "Offline-first Progressive Web App",
+      "24 language support with RTL",
+      "15+ colour themes",
+      "Zero tracking — no analytics, no ads",
+      "window.Ganit JavaScript API",
+      "Web Component: <ganit-calc>"
+    ],
+    "sameAs": [
+      "https://github.com/prashantkeshr/Ganit-Calculator"
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD — BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Ganit Calculator", "item": "https://ganit.dhurta.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Basic Calculator",     "item": "https://ganit.dhurta.com/#/basic" },
+      { "@type": "ListItem", "position": 3, "name": "Scientific Calculator","item": "https://ganit.dhurta.com/#/scientific" },
+      { "@type": "ListItem", "position": 4, "name": "Financial Calculator", "item": "https://ganit.dhurta.com/#/financial/loan" },
+      { "@type": "ListItem", "position": 5, "name": "Health Calculator",    "item": "https://ganit.dhurta.com/#/health/bmi" }
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD — FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Ganit Calculator free to use?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Ganit Calculator is completely free, with no subscriptions, no sign-up, and no ads." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Ganit Calculator work offline?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. After the first visit, Ganit Calculator works fully offline as a Progressive Web App (PWA). All calculators are cached and run in the browser." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Ganit Calculator collect any data?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Ganit Calculator sends zero data to any server. There is no analytics, no tracking, and no ads. Calculation history is stored locally in your browser only." }
+      },
+      {
+        "@type": "Question",
+        "name": "How many calculators does Ganit have?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Ganit Calculator includes 55+ tools across 18 categories: basic, scientific, engineering, financial (loan/EMI/ROI), health (BMI/BMR), statistics, physics, programmer tools, construction, date/time, equations, matrix, graphing, currency, and more." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I embed Ganit Calculator on my website?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Ganit provides a Web Component (<ganit-calc>) and a JavaScript API (window.Ganit). Load the web-component.js file and use <ganit-calc type='basic'> or any other tool type." }
+      }
+    ]
   }
   </script>
 </head>

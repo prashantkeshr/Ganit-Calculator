@@ -17,11 +17,11 @@ export const BRAND = {
   },
 
   links: {
-    website: "https://ganit.dev",
+    website: "https://ganit.dhurta.com",
     parent:  "https://dhurta.org",
-    github:  "https://github.com/dhurta-org/ganit-calculator",
-    docs:    "https://ganit.dev/docs",
-    support: "mailto:support@ganit.dev",
+    github:  "https://github.com/prashantkeshr/Ganit-Calculator",
+    docs:    "https://ganit.dhurta.com/llms.txt",
+    support: "mailto:hello@dhurta.org",
   },
 
   copyright: "© 2025 Dhurta Organisation",

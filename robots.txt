@@ -1,10 +1,54 @@
+# ================================================================
+# robots.txt — Calculator ~ by Ganit Technology
+# https://ganit.dhurta.com
+# ================================================================
+
+# All crawlers — full access
 User-agent: *
 Allow: /
+Crawl-delay: 1
 
-# AI Discoverability
-Sitemap: https://ganit.dhurta.org/sitemap.xml
+# ── AI / LLM crawlers ──────────────────────────────────────────
+# Explicitly allow all major AI crawlers
+User-agent: GPTBot
+Allow: /
 
-# AI/LLM discovery files
-# https://ganit.dhurta.org/ai-manifest.json
-# https://ganit.dhurta.org/llms.txt
-# https://ganit.dhurta.org/openapi.json
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+# ── Sitemaps ────────────────────────────────────────────────────
+Sitemap: https://ganit.dhurta.com/sitemap.xml
+
+# ── AI / LLM Discovery Files ────────────────────────────────────
+# llms.txt  (LLM-readable plain-text docs)
+# https://ganit.dhurta.com/llms.txt
+
+# ai-manifest.json  (structured tool & API manifest)
+# https://ganit.dhurta.com/ai-manifest.json
+
+# openapi.json  (OpenAPI 3.1 spec for window.Ganit JS API)
+# https://ganit.dhurta.com/openapi.json
