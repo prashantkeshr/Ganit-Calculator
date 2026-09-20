@@ -1,0 +1,49 @@
+/* ======================================================
+   Ganit Calculator — RTL Overrides
+   Applied when html[dir="rtl"]
+   Calculator ~ by Ganit Technology | Dhurta Organisation
+   ====================================================== */
+
+[dir="rtl"] .app { direction: rtl; }
+
+[dir="rtl"] .ganit-sidebar { border-right: none; border-left: 1px solid var(--color-border); }
+
+[dir="rtl"] .sidebar-tool-link { padding: 5px 30px 5px 12px; }
+[dir="rtl"] .sidebar-tool-link.active {
+  border-left: none; border-right: 2px solid var(--color-primary);
+  padding-right: 28px; padding-left: 12px;
+}
+
+[dir="rtl"] .calc-display { text-align: left; }
+[dir="rtl"] .calc-result  { text-align: left; }
+
+[dir="rtl"] .form-row label { text-align: right; }
+
+[dir="rtl"] .history-panel { left: 0; right: auto; border-left: none; border-right: 1px solid var(--color-border); transform: translateX(-100%); }
+[dir="rtl"] .history-panel.open { transform: translateX(0); }
+
+[dir="rtl"] .formula-box { border-left: none; border-right: 3px solid var(--color-primary); border-radius: var(--radius) 0 0 var(--radius); }
+
+[dir="rtl"] .ganit-footer { flex-direction: row-reverse; }
+
+[dir="rtl"] .ganit-float { right: auto; left: 24px; transform-origin: bottom left; }
+
+[dir="rtl"] .input-prefix { border-right: none; border-left: 1px solid var(--color-border); }
+[dir="rtl"] .input-suffix { border-left: none; border-right: 1px solid var(--color-border); }
+
+[dir="rtl"] .data-table th, [dir="rtl"] .data-table td { text-align: left; }
+[dir="rtl"] .data-table td:first-child, [dir="rtl"] .data-table th:first-child { text-align: right; }
+
+[dir="rtl"] .amort-details summary { flex-direction: row-reverse; }
+
+[dir="rtl"] .result-row { flex-direction: row-reverse; }
+
+[dir="rtl"] .calc-percentage,
+[dir="rtl"] .calc-area { direction: rtl; }
+
+[dir="rtl"] .notice { flex-direction: row-reverse; }
+
+[dir="rtl"] .cmd-dialog { left: auto; right: 50%; transform: translateX(50%); }
+
+[dir="rtl"] .step-list li { flex-direction: row-reverse; }
+[dir="rtl"] .step-list li::before { margin-right: 0; margin-left: 0; }

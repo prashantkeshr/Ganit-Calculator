@@ -1,0 +1,40 @@
+{
+  "name": "Calculator ~ by Ganit Technology",
+  "short_name": "Ganit Calc",
+  "description": "Universal privacy-first calculator. 45+ tools across 18 categories. Offline-first, no tracking.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#4F46E5",
+  "orientation": "any",
+  "categories": ["utilities", "productivity", "education"],
+  "lang": "en",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    { "name": "Basic Calculator", "url": "/#/basic", "description": "Standard arithmetic calculator" },
+    { "name": "Scientific", "url": "/#/scientific", "description": "Scientific calculator with trig and log" },
+    { "name": "Currency Converter", "url": "/#/currency", "description": "Multi-currency converter with 80+ currencies" },
+    { "name": "Unit Converter", "url": "/#/engineering", "description": "Engineering unit converter and base calculator" }
+  ]
+}

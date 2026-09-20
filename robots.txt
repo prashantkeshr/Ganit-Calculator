@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# AI Discoverability
+Sitemap: https://ganit.dhurta.org/sitemap.xml
+
+# AI/LLM discovery files
+# https://ganit.dhurta.org/ai-manifest.json
+# https://ganit.dhurta.org/llms.txt
+# https://ganit.dhurta.org/openapi.json

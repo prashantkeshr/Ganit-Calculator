@@ -1,0 +1,58 @@
+{
+  "name": "@ganit/calculator",
+  "version": "0.1.0",
+  "description": "Calculator ~ by Ganit Technology. Universal privacy-first offline calculator platform. 45+ tools, 18 categories.",
+  "private": false,
+  "license": "MIT",
+  "author": {
+    "name": "Dhurta Organisation",
+    "url": "https://dhurta.org"
+  },
+  "homepage": "https://ganit.dhurta.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dhurta-org/ganit-calculator"
+  },
+  "bugs": {
+    "url": "https://github.com/dhurta-org/ganit-calculator/issues"
+  },
+  "keywords": [
+    "calculator", "scientific-calculator", "financial-calculator",
+    "unit-converter", "offline", "pwa", "progressive-web-app",
+    "ganit", "dhurta", "math", "statistics", "matrix"
+  ],
+  "type": "module",
+  "scripts": {
+    "start":   "npx serve . -l 3000",
+    "dev":     "npx serve . -l 3000",
+    "preview": "npx serve . -l 3000",
+    "lint":    "npx eslint js/**/*.js --ext .js",
+    "format":  "npx prettier --write \"js/**/*.js\" \"css/**/*.css\""
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "index.html",
+    "manifest.webmanifest",
+    "service-worker.js",
+    "robots.txt",
+    "sitemap.xml",
+    "llms.txt",
+    "ai-manifest.json",
+    "openapi.json",
+    "js/",
+    "css/",
+    "locales/",
+    "data/",
+    "assets/"
+  ],
+  "exports": {
+    ".": "./index.html",
+    "./api": "./js/api/js-api.js",
+    "./web-component": "./js/web-component.js"
+  }
+}

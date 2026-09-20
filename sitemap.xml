@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://ganit.dhurta.org/</loc><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/basic</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/scientific</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/engineering</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/financial/loan</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/health/bmi</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/percentage</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/currency</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/programmer/base-converter</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/matrix</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/statistics/descriptive</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/physics/kinematics</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/construction/concrete</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/datetime/diff</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/age</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/equation/linear</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/graph</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/area</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/about</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ganit.dhurta.org/#/privacy</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+</urlset>

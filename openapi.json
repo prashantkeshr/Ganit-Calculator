@@ -1,0 +1,92 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Calculator ~ by Ganit Technology — JavaScript API",
+    "description": "The window.Ganit JavaScript API exposed by the Calculator application. All operations run in-browser with no network calls.",
+    "version": "0.1.0-beta",
+    "contact": {
+      "name": "Dhurta Organisation",
+      "url": "https://dhurta.org"
+    },
+    "license": { "name": "MIT" }
+  },
+  "servers": [
+    { "url": "javascript:window.Ganit", "description": "In-browser JavaScript API (no HTTP server)" }
+  ],
+  "paths": {
+    "/calculate": {
+      "description": "Evaluate any mathematical expression",
+      "x-js": "window.Ganit.calculate(expression, options)",
+      "parameters": [
+        { "name": "expression", "in": "query", "required": true, "schema": { "type": "string", "example": "2 + 2 * sin(30)" } },
+        { "name": "angleMode", "in": "query", "schema": { "type": "string", "enum": ["DEG", "RAD", "GRAD"], "default": "DEG" } }
+      ]
+    },
+    "/financial/loan": {
+      "description": "Loan amortization calculator",
+      "x-js": "window.Ganit.financial.loan({ principal, annualRate, months, startDate? })",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "principal": { "type": "number", "description": "Loan amount", "example": 100000 },
+                "annualRate": { "type": "number", "description": "Annual interest rate %", "example": 7.5 },
+                "months": { "type": "integer", "description": "Loan term in months", "example": 240 }
+              },
+              "required": ["principal", "annualRate", "months"]
+            }
+          }
+        }
+      }
+    },
+    "/health/bmi": {
+      "description": "BMI calculator",
+      "x-js": "window.Ganit.health.bmi({ weight, height, unit })",
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "weight": { "type": "number", "example": 70 },
+                "height": { "type": "number", "example": 175 },
+                "unit": { "type": "string", "enum": ["metric", "imperial"], "default": "metric" }
+              },
+              "required": ["weight", "height"]
+            }
+          }
+        }
+      }
+    },
+    "/percentage/of": {
+      "description": "Calculate X% of Y",
+      "x-js": "window.Ganit.percentage.of(percent, value)",
+      "parameters": [
+        { "name": "percent", "in": "query", "required": true, "schema": { "type": "number", "example": 15 } },
+        { "name": "value",   "in": "query", "required": true, "schema": { "type": "number", "example": 200 } }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "result": { "description": "Numeric result" },
+          "formatted": { "type": "string", "description": "Formatted result string" },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "tool": { "type": "string" },
+              "version": { "type": "string" },
+              "brand": { "type": "string" },
+              "timestamp": { "type": "number" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

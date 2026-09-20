@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "name": "Calculator ~ by Ganit Technology",
+  "short_name": "Ganit Calculator",
+  "description": "Universal privacy-first browser-based calculator platform with 45+ tools across 18 categories. No tracking, no backend, fully offline-capable.",
+  "version": "0.1.0-beta",
+  "base_url": "https://ganit.dhurta.org",
+  "organization": {
+    "name": "Ganit Technology",
+    "parent": "Dhurta Organisation",
+    "website": "https://dhurta.org",
+    "contact": "hello@dhurta.org"
+  },
+  "capabilities": [
+    "arithmetic",
+    "scientific-math",
+    "financial-calculations",
+    "unit-conversion",
+    "base-conversion",
+    "statistics",
+    "matrix-operations",
+    "equation-solving",
+    "graphing",
+    "date-calculations",
+    "currency-conversion",
+    "health-metrics",
+    "programming-utilities",
+    "construction-calculations",
+    "physics-calculations"
+  ],
+  "api": {
+    "js": {
+      "global": "window.Ganit",
+      "alias": "window.OmniCalc",
+      "docs": "https://ganit.dhurta.org/llms.txt"
+    },
+    "url": {
+      "base": "https://ganit.dhurta.org/#/",
+      "docs": "https://ganit.dhurta.org/llms.txt"
+    },
+    "web_component": {
+      "tag": "ganit-calc",
+      "src": "https://ganit.dhurta.org/js/web-component.js"
+    }
+  },
+  "tools": [
+    { "id": "basic",         "name": "Basic Calculator",       "url": "/#/basic",                   "category": "calculators" },
+    { "id": "scientific",    "name": "Scientific Calculator",  "url": "/#/scientific",              "category": "calculators" },
+    { "id": "engineering",   "name": "Engineering Calculator", "url": "/#/engineering",             "category": "calculators" },
+    { "id": "loan",          "name": "Loan Calculator",        "url": "/#/financial/loan",          "category": "finance" },
+    { "id": "compound",      "name": "Compound Interest",      "url": "/#/financial/compound",      "category": "finance" },
+    { "id": "roi",           "name": "ROI / CAGR",             "url": "/#/financial/roi",           "category": "finance" },
+    { "id": "bmi",           "name": "BMI Calculator",         "url": "/#/health/bmi",              "category": "health" },
+    { "id": "bmr",           "name": "BMR / TDEE",             "url": "/#/health/bmr",              "category": "health" },
+    { "id": "percentage",    "name": "Percentage Tools",       "url": "/#/percentage",              "category": "math" },
+    { "id": "area",          "name": "Area & Volume",          "url": "/#/area",                    "category": "geometry" },
+    { "id": "currency",      "name": "Currency Converter",     "url": "/#/currency",                "category": "finance" },
+    { "id": "age",           "name": "Age Calculator",         "url": "/#/age",                     "category": "datetime" },
+    { "id": "programmer",    "name": "Programmer Tools",       "url": "/#/programmer",              "category": "programming" },
+    { "id": "matrix",        "name": "Matrix Calculator",      "url": "/#/matrix",                  "category": "math" },
+    { "id": "statistics",    "name": "Statistics",             "url": "/#/statistics/descriptive",  "category": "math" },
+    { "id": "physics",       "name": "Physics Formulas",       "url": "/#/physics/kinematics",      "category": "science" },
+    { "id": "construction",  "name": "Construction Calc",      "url": "/#/construction/concrete",   "category": "construction" },
+    { "id": "datetime",      "name": "Date & Time",            "url": "/#/datetime/diff",           "category": "datetime" },
+    { "id": "graph",         "name": "Function Grapher",       "url": "/#/graph",                   "category": "math" },
+    { "id": "equation",      "name": "Equation Solver",        "url": "/#/equation/linear",         "category": "math" }
+  ],
+  "privacy": {
+    "analytics": false,
+    "cookies": false,
+    "data_collection": false,
+    "third_party_scripts": false,
+    "offline_capable": true,
+    "data_leaves_browser": false
+  },
+  "llms_txt": "https://ganit.dhurta.org/llms.txt",
+  "openapi": "https://ganit.dhurta.org/openapi.json"
+}

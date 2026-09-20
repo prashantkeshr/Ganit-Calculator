@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" role="img" aria-label="Ganit Technology Logo">
+  <title>Ganit Technology</title>
+  <!-- Outer ring -->
+  <circle cx="40" cy="40" r="36" stroke="#4F46E5" stroke-width="3.5"/>
+  <!-- Inner accent ring -->
+  <circle cx="40" cy="40" r="28" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4 4"/>
+  <!-- Pi symbol -->
+  <text
+    x="40" y="52"
+    text-anchor="middle"
+    font-size="38"
+    fill="#4F46E5"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-weight="400">π</text>
+  <!-- Bottom brand text -->
+  <text
+    x="40" y="72"
+    text-anchor="middle"
+    font-size="6"
+    fill="#94A3B8"
+    font-family="system-ui, sans-serif"
+    letter-spacing="1">GANIT</text>
+</svg>
