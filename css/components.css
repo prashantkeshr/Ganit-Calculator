@@ -286,3 +286,31 @@ textarea.calc-input:focus { outline: none; border-color: var(--color-primary); }
 
 /* ====== QR & SHARE ====== */
 #share-canvas { display: block; max-width: 100%; }
+
+/* ====== CALCULUS CALCULATOR ====== */
+.calculus-info { background: rgba(0,196,232,0.06); border: 1px solid rgba(0,196,232,0.18); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 18px; font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5; }
+.calculus-info strong { color: var(--color-primary); }
+
+.calc-input-expr { font-family: var(--font-mono); font-size: 1rem; background: rgba(7,16,39,0.7); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 8px 12px; color: var(--color-text); width: 100%; }
+.calc-input-expr:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(0,196,232,0.12); }
+
+.calc-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 12px; }
+.calc-table th { background: rgba(0,196,232,0.08); color: var(--color-primary); font-weight: 700; text-align: center; padding: 6px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.calc-table td { text-align: center; padding: 6px 12px; border-bottom: 1px solid rgba(0,196,232,0.08); font-family: var(--font-mono); }
+.calc-table tr:nth-child(3) td { background: rgba(0,196,232,0.06); color: var(--color-primary); font-weight: 600; }
+
+.calc-note { font-size: 0.75rem; color: var(--color-text-muted); font-style: italic; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--color-border); }
+
+.result-card.accent { border-color: var(--color-primary); background: rgba(0,196,232,0.08); }
+.result-card.accent .result-label { color: var(--color-primary); }
+.result-card.accent .result-value { color: var(--color-primary); }
+
+/* Taylor series display */
+.taylor-expansion { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; }
+.taylor-terms { display: flex; flex-direction: column; gap: 4px; margin: 12px 0; }
+.taylor-term { display: flex; align-items: baseline; gap: 12px; font-size: 0.875rem; padding: 4px 8px; border-radius: var(--radius-xs); }
+.taylor-term:nth-child(odd) { background: rgba(255,255,255,0.02); }
+.taylor-term.zero { opacity: 0.4; }
+.term-order { font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-text-muted); min-width: 44px; flex-shrink: 0; }
+.term-expr { font-family: var(--font-mono); color: var(--color-text); }
+.taylor-sum { margin-top: 12px; padding: 10px 14px; background: rgba(0,196,232,0.06); border: 1px solid rgba(0,196,232,0.2); border-radius: var(--radius); font-family: var(--font-mono); font-size: 0.875rem; color: var(--color-accent); word-break: break-all; }

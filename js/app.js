@@ -31,6 +31,7 @@ const CALC_MODULES = {
   '/physics/:sub':           () => import('./calculators/physics.js').then(m => m.renderPhysics),
   '/construction/:sub':      () => import('./calculators/construction.js').then(m => m.renderConstruction),
   '/datetime/:sub':          () => import('./calculators/datetime.js').then(m => m.renderDatetime),
+  '/calculus/:sub':          () => import('./calculators/calculus.js').then(m => m.renderCalculus),
 };
 
 let currentCleanup = null;
@@ -43,7 +44,7 @@ async function renderCalc(path, params) {
   if (currentCleanup) { try { currentCleanup(); } catch {} currentCleanup = null; }
 
   // Update page title
-  document.title = `${formatTitle(path)} — Calculator ~ by Ganit Technology`;
+  document.title = `${formatTitle(path, params)} — Calculator ~ by Ganit Technology`;
 
   // Find matching route
   let loader = null;
@@ -82,8 +83,9 @@ function matchPattern(pattern, path) {
   return pp.every((seg, i) => seg.startsWith(':') || seg === pathP[i]);
 }
 
-function formatTitle(path) {
-  const parts = path.split('/').filter(Boolean);
+function formatTitle(path, params = {}) {
+  const resolved = path.replace(/:(\w+)/g, (_, k) => params[k] || k);
+  const parts = resolved.split('/').filter(Boolean);
   if (!parts.length) return 'Basic Calculator';
   return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
 }
@@ -177,6 +179,8 @@ async function boot() {
     .on('/construction', ({ params }) => renderCalc('/construction/:sub', { ...params, sub: 'concrete' }))
     .on('/datetime/:sub', ({ params }) => renderCalc('/datetime/:sub', params))
     .on('/datetime', ({ params }) => renderCalc('/datetime/:sub', { ...params, sub: 'diff' }))
+    .on('/calculus/:sub', ({ params }) => renderCalc('/calculus/:sub', params))
+    .on('/calculus', ({ params }) => renderCalc('/calculus/:sub', { ...params, sub: 'derivative' }))
     .on('/about', () => renderAbout())
     .on('/privacy', () => renderPrivacy());
 
