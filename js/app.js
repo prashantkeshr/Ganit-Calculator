@@ -32,6 +32,8 @@ const CALC_MODULES = {
   '/construction/:sub':      () => import('./calculators/construction.js').then(m => m.renderConstruction),
   '/datetime/:sub':          () => import('./calculators/datetime.js').then(m => m.renderDatetime),
   '/calculus/:sub':          () => import('./calculators/calculus.js').then(m => m.renderCalculus),
+  '/unit-converter/:sub':    () => import('./calculators/unit-converter.js').then(m => m.renderUnitConverter),
+  '/gpa/:sub':               () => import('./calculators/gpa.js').then(m => m.renderGpaCalculator),
 };
 
 let currentCleanup = null;
@@ -83,8 +85,14 @@ function matchPattern(pattern, path) {
   return pp.every((seg, i) => seg.startsWith(':') || seg === pathP[i]);
 }
 
+const TITLE_MAP = {
+  'unit-converter': 'Unit Converter', 'gpa/gpa': 'GPA Calculator', 'gpa/grade': 'Grade Calculator',
+  'gpa/cgpa': 'GPA Converter', 'calculus/derivative': 'Derivative', 'calculus/integral': 'Integration',
+  'calculus/taylor': 'Taylor Series',
+};
 function formatTitle(path, params = {}) {
-  const resolved = path.replace(/:(\w+)/g, (_, k) => params[k] || k);
+  const resolved = path.replace(/:(\w+)/g, (_, k) => params[k] || k).replace(/^\//, '');
+  if (TITLE_MAP[resolved]) return TITLE_MAP[resolved];
   const parts = resolved.split('/').filter(Boolean);
   if (!parts.length) return 'Basic Calculator';
   return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
@@ -181,6 +189,10 @@ async function boot() {
     .on('/datetime', ({ params }) => renderCalc('/datetime/:sub', { ...params, sub: 'diff' }))
     .on('/calculus/:sub', ({ params }) => renderCalc('/calculus/:sub', params))
     .on('/calculus', ({ params }) => renderCalc('/calculus/:sub', { ...params, sub: 'derivative' }))
+    .on('/unit-converter/:sub', ({ params }) => renderCalc('/unit-converter/:sub', params))
+    .on('/unit-converter', ({ params }) => renderCalc('/unit-converter/:sub', { ...params, sub: 'length' }))
+    .on('/gpa/:sub', ({ params }) => renderCalc('/gpa/:sub', params))
+    .on('/gpa', ({ params }) => renderCalc('/gpa/:sub', { ...params, sub: 'gpa' }))
     .on('/about', () => renderAbout())
     .on('/privacy', () => renderPrivacy());
 

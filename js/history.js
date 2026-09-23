@@ -9,6 +9,7 @@ export class History {
     const record = {
       ...entry,
       timestamp: Date.now(),
+      starred: false,
     };
     const id = await idb.add('history', record);
     record.id = id;
@@ -16,11 +17,22 @@ export class History {
     return id;
   }
 
-  async getAll({ limit = 200, category = null } = {}) {
+  async getAll({ limit = 200, category = null, starred = null } = {}) {
     let items = await idb.getAll('history');
     if (category) items = items.filter(i => i.category === category);
+    if (starred !== null) items = items.filter(i => !!i.starred === starred);
     items.sort((a, b) => b.timestamp - a.timestamp);
     return items.slice(0, limit);
+  }
+
+  async toggleStar(id) {
+    const items = await idb.getAll('history');
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    item.starred = !item.starred;
+    await idb.put('history', item);
+    this._emit('star', item);
+    return item.starred;
   }
 
   async delete(id) {

@@ -83,11 +83,28 @@
   <url><loc>https://ganit.dhurta.com/#/datetime/week</loc><lastmod>2026-09-21</lastmod><changefreq>monthly</changefreq><priority>0.65</priority></url>
 
   <!-- ══ GEOMETRY ══════════════════════════════════════════════ -->
-  <url><loc>https://ganit.dhurta.com/#/area</loc><lastmod>2026-09-21</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://ganit.dhurta.com/#/age</loc><lastmod>2026-09-21</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/area</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/age</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- ══ UNIT CONVERTER ════════════════════════════════════════ -->
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/length</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/weight</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/temperature</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/speed</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/volume</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/area</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/time</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/pressure</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/energy</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/unit-converter/data</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- ══ GPA & GRADES ══════════════════════════════════════════ -->
+  <url><loc>https://ganit.dhurta.com/#/gpa/gpa</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/gpa/grade</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/gpa/cgpa</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- ══ STATIC PAGES ══════════════════════════════════════════ -->
-  <url><loc>https://ganit.dhurta.com/#/about</loc><lastmod>2026-09-21</lastmod><changefreq>yearly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://ganit.dhurta.com/#/privacy</loc><lastmod>2026-09-21</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/about</loc><lastmod>2026-09-24</lastmod><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ganit.dhurta.com/#/privacy</loc><lastmod>2026-09-24</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
 
 </urlset>

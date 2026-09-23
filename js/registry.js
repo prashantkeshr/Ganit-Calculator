@@ -21,6 +21,8 @@ export const CATEGORIES = [
   { id: 'currency',     label: 'Currency',        icon: '💱', description: 'User-editable exchange rates — fully offline' },
   { id: 'area',         label: 'Area & Volume',   icon: '📐', description: 'All shapes — area, perimeter, volume' },
   { id: 'percentage',   label: 'Percentage',      icon: '%',  description: 'All percentage calculations' },
+  { id: 'unit',        label: 'Unit Converter',  icon: '🔄', description: 'Length, weight, temperature, speed, volume and more' },
+  { id: 'gpa',         label: 'GPA & Grades',    icon: '🎓', description: 'GPA calculator, grade calculator, GPA converter' },
 ];
 
 export const TOOLS = [
@@ -86,6 +88,21 @@ export const TOOLS = [
   { id: 'area.volume',          category: 'area',         label: 'Volume',                   path: '/volume' },
   // Percentage
   { id: 'percentage',           category: 'percentage',   label: 'Percentage',               path: '/percentage' },
+  // Unit Converter
+  { id: 'unit.length',          category: 'unit',         label: 'Length',                   path: '/unit-converter/length' },
+  { id: 'unit.weight',          category: 'unit',         label: 'Weight / Mass',            path: '/unit-converter/weight' },
+  { id: 'unit.temperature',     category: 'unit',         label: 'Temperature',              path: '/unit-converter/temperature' },
+  { id: 'unit.speed',           category: 'unit',         label: 'Speed',                    path: '/unit-converter/speed' },
+  { id: 'unit.volume',          category: 'unit',         label: 'Volume',                   path: '/unit-converter/volume' },
+  { id: 'unit.area',            category: 'unit',         label: 'Area',                     path: '/unit-converter/area' },
+  { id: 'unit.time',            category: 'unit',         label: 'Time',                     path: '/unit-converter/time' },
+  { id: 'unit.pressure',        category: 'unit',         label: 'Pressure',                 path: '/unit-converter/pressure' },
+  { id: 'unit.energy',          category: 'unit',         label: 'Energy',                   path: '/unit-converter/energy' },
+  { id: 'unit.data',            category: 'unit',         label: 'Data Storage',             path: '/unit-converter/data' },
+  // GPA & Grades
+  { id: 'gpa.gpa',              category: 'gpa',          label: 'GPA Calculator',           path: '/gpa/gpa' },
+  { id: 'gpa.grade',            category: 'gpa',          label: 'Grade Calculator',         path: '/gpa/grade' },
+  { id: 'gpa.cgpa',             category: 'gpa',          label: 'GPA Converter',            path: '/gpa/cgpa' },
 ];
 
 export const toolsMap = new Map(TOOLS.map(t => [t.id, t]));

@@ -314,3 +314,38 @@ textarea.calc-input:focus { outline: none; border-color: var(--color-primary); }
 .term-order { font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-text-muted); min-width: 44px; flex-shrink: 0; }
 .term-expr { font-family: var(--font-mono); color: var(--color-text); }
 .taylor-sum { margin-top: 12px; padding: 10px 14px; background: rgba(0,196,232,0.06); border: 1px solid rgba(0,196,232,0.2); border-radius: var(--radius); font-family: var(--font-mono); font-size: 0.875rem; color: var(--color-accent); word-break: break-all; }
+
+/* ====== UNIT CONVERTER ====== */
+.uc-cat-tabs { flex-wrap: wrap; gap: 4px; }
+.uc-converter-row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 16px; }
+.uc-side { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.uc-side label { font-size: 0.75rem; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.calc-select { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius); color: var(--color-text); padding: 8px 12px; font-size: 0.875rem; width: 100%; cursor: pointer; }
+.calc-select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(0,196,232,0.12); }
+.uc-swap-btn { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--color-primary); cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+.uc-swap-btn:hover { background: rgba(0,196,232,0.12); }
+.uc-result-display { background: var(--color-surface-2); border: 1px solid var(--color-primary); border-radius: var(--radius); padding: 10px 14px; font-family: var(--font-mono); font-size: 1.1rem; color: var(--color-primary); min-height: 44px; display: flex; align-items: center; }
+.uc-table .uc-value { font-family: var(--font-mono); color: var(--color-primary); font-weight: 600; }
+.uc-from-row td { background: rgba(0,196,232,0.08); font-weight: 700; color: var(--color-primary); }
+
+/* ====== GPA & GRADE CALCULATOR ====== */
+.gpa-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+.gpa-subject { flex: 1; }
+.gpa-grade { min-width: 110px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius); color: var(--color-text); padding: 8px 10px; font-size: 0.875rem; cursor: pointer; }
+.gpa-credits { width: 80px; }
+.gpa-remove-btn { background: transparent; border: 1px solid var(--color-border); border-radius: var(--radius); color: var(--color-text-muted); padding: 6px 10px; cursor: pointer; line-height: 1; }
+.gpa-remove-btn:hover { border-color: #f87171; color: #f87171; }
+.gpa-actions { display: flex; gap: 10px; margin: 16px 0; flex-wrap: wrap; }
+.btn-calc-secondary { background: transparent; border: 1px solid var(--color-border); color: var(--color-text); padding: 10px 18px; border-radius: var(--radius); font-size: 0.875rem; cursor: pointer; transition: all 0.15s; }
+.btn-calc-secondary:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.grade-row { display: grid; grid-template-columns: 2fr 80px 80px 70px auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+.grade-header-labels { display: grid; grid-template-columns: 2fr 80px 80px 70px auto; gap: 8px; font-size: 0.7rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+
+/* ====== HISTORY PANEL STAR ====== */
+.history-tabs { display: flex; border-bottom: 1px solid var(--color-border); padding: 0 16px; }
+.history-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 8px 14px; font-size: 0.875rem; font-weight: 600; color: var(--color-text-muted); cursor: pointer; transition: all 0.15s; }
+.history-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.history-item { display: flex; align-items: flex-start; gap: 6px; }
+.history-star { background: none; border: none; font-size: 1rem; color: var(--color-text-muted); cursor: pointer; padding: 8px 4px; line-height: 1; flex-shrink: 0; transition: color 0.15s; }
+.history-star:hover, .history-star.active { color: #facc15; }
+.history-item.starred .history-expr { color: var(--color-primary); }
