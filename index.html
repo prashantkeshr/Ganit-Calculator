@@ -267,6 +267,10 @@
 
         <!-- Right-side actions -->
         <div class="header-right">
+          <button id="header-dashboard" class="header-action-btn" title="Open calculation dashboard" aria-label="Calculation dashboard">
+            <span>📊</span>
+            <span>Dashboard</span>
+          </button>
           <button id="header-history" class="header-action-btn" title="Toggle history (Ctrl+H)" aria-label="Toggle history">
             <span>📋</span>
             <span>History</span>
@@ -292,7 +296,12 @@
           <p>Loading…</p>
         </div>
       </div>
+      <!-- In-canvas calculation tape -->
+      <div id="calc-tape" class="calc-tape tape-hidden" aria-label="Recent calculations"></div>
     </main>
+
+    <!-- Dashboard overlay -->
+    <div id="dashboard-overlay" class="dashboard-overlay hidden" role="dialog" aria-label="Calculation Dashboard" aria-modal="true"></div>
 
     <!-- ── FOOTER ──────────────────────────────────────── -->
     <footer class="ganit-footer" role="contentinfo">

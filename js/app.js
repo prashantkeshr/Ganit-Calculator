@@ -5,6 +5,8 @@ import { store } from './store.js';
 import { renderSidebar } from './ui/sidebar.js';
 import { initCommandPalette } from './ui/command-palette.js';
 import { initHistoryPanel } from './ui/history-panel.js';
+import { initCalcTape } from './ui/calc-tape.js';
+import { initDashboard, openDashboard } from './ui/dashboard.js';
 import { injectFooter, BRAND } from './brand.js';
 import { mathEngine } from './math-engine.js';
 import { updateSEO } from './seo.js';
@@ -122,8 +124,13 @@ async function boot() {
   // Init command palette & history
   initCommandPalette();
   initHistoryPanel();
+  initCalcTape();
+  initDashboard();
 
   // Init header actions
+  const dashBtn = document.getElementById('header-dashboard');
+  if (dashBtn) dashBtn.addEventListener('click', () => openDashboard());
+
   const histBtn = document.getElementById('header-history');
   if (histBtn) {
     histBtn.addEventListener('click', () =>
