@@ -4,12 +4,12 @@ import { router } from '../router.js';
 let currentCategory = null;
 let tape = null;
 
-const NO_TAPE = new Set(['history', 'about', 'privacy', '']);
+const NO_TAPE = new Set(['history', 'about', 'privacy']);
 
 function getCategoryFromPath(path) {
-  if (!path) return null;
+  if (!path || path === '/') return 'basic'; // root route always shows basic
   const seg = path.replace(/^\//, '').split('/')[0];
-  if (NO_TAPE.has(seg)) return null;
+  if (!seg || NO_TAPE.has(seg)) return null;
   const remap = { 'time': 'datetime', 'datetime': 'datetime', 'volume': 'area', 'unit-converter': 'unit' };
   return remap[seg] || seg;
 }
