@@ -17,6 +17,24 @@ function makeForm(fields, idPrefix) {
 const TOOLS = {
   concrete: {
     label: 'Concrete Volume',
+    equation: 'V = L × W × D',
+    hint: 'Leave any one field blank — it will be computed.',
+    revVars: [
+      { id: 'l',   label: 'Length (L)',  suffix: 'm' },
+      { id: 'w',   label: 'Width (W)',   suffix: 'm' },
+      { id: 'd',   label: 'Depth (D)',   suffix: 'm' },
+      { id: 'vol', label: 'Volume (V)',  suffix: 'm³' },
+    ],
+    revDefaults: { l: 5, w: 4, d: 0.15, vol: '' },
+    revSolve(v) {
+      const { l, w, d, vol } = v;
+      if (l == null)   return { id: 'l',   value: vol / (w * d), label: 'V ÷ (W × D)' };
+      if (w == null)   return { id: 'w',   value: vol / (l * d), label: 'V ÷ (L × D)' };
+      if (d == null)   return { id: 'd',   value: vol / (l * w), label: 'V ÷ (L × W)' };
+      const V = l * w * d;
+      return { id: 'vol', value: V, label: 'L × W × D',
+        extra: `Cement: ${Math.ceil(V * 320 / 50)} bags · Sand: ${fmt(V * 680)} kg · Water: ${fmt(V * 180)} L` };
+    },
     fields: [
       { id: 'l',     label: 'Length',  unit: 'm', default: 5 },
       { id: 'w',     label: 'Width',   unit: 'm', default: 4 },
@@ -24,10 +42,10 @@ const TOOLS = {
     ],
     compute(f) {
       const vol = f.l * f.w * f.depth;
-      const cement = vol * 320; // kg at standard mix
-      const sand   = vol * 680; // kg
-      const agg    = vol * 1200; // kg
-      const water  = vol * 180; // L
+      const cement = vol * 320;
+      const sand   = vol * 680;
+      const agg    = vol * 1200;
+      const water  = vol * 180;
       return {
         'Volume': `${fmt(vol)} m³`,
         'Bags of cement (50 kg)': `${Math.ceil(cement / 50)}`,
@@ -60,6 +78,24 @@ const TOOLS = {
   },
   paint: {
     label: 'Paint Coverage',
+    equation: 'Litres = (Walls − Subtract) × Coats ÷ Coverage',
+    hint: 'Leave any one field blank — it will be computed.',
+    revVars: [
+      { id: 'walls',    label: 'Total wall area',   suffix: 'm²' },
+      { id: 'subtract', label: 'Doors/windows area',suffix: 'm²' },
+      { id: 'coats',    label: 'Number of coats' },
+      { id: 'coverage', label: 'Coverage per litre',suffix: 'm²/L' },
+      { id: 'litres',   label: 'Paint needed',      suffix: 'L' },
+    ],
+    revDefaults: { walls: 50, subtract: 5, coats: 2, coverage: 12, litres: '' },
+    revSolve(v) {
+      const { walls, subtract, coats, coverage, litres } = v;
+      if (litres == null)   return { id: 'litres',   value: (walls - subtract) * coats / coverage, label: '(Walls − Subtract) × Coats ÷ Coverage' };
+      if (walls == null)    return { id: 'walls',    value: litres * coverage / coats + subtract,  label: 'L × Coverage ÷ Coats + Subtract' };
+      if (subtract == null) return { id: 'subtract', value: walls - litres * coverage / coats,     label: 'Walls − L × Coverage ÷ Coats' };
+      if (coats == null)    return { id: 'coats',    value: litres * coverage / (walls - subtract),label: 'L × Coverage ÷ (Walls − Subtract)' };
+      return { id: 'coverage', value: (walls - subtract) * coats / litres, label: '(Walls − Subtract) × Coats ÷ L' };
+    },
     fields: [
       { id: 'walls',     label: 'Total wall area', unit: 'm²', default: 50 },
       { id: 'subtract',  label: 'Doors/windows area', unit: 'm²', default: 5 },
@@ -126,6 +162,33 @@ const TOOLS = {
   },
   ohm: {
     label: "Ohm's Law",
+    equation: "V = I × R  ·  P = V × I",
+    hint: 'Fill any 2 fields — the other 2 are computed.',
+    revVars: [
+      { id: 'V', label: 'Voltage (V)',     suffix: 'V' },
+      { id: 'I', label: 'Current (I)',     suffix: 'A' },
+      { id: 'R', label: 'Resistance (R)', suffix: 'Ω' },
+      { id: 'P', label: 'Power (P)',       suffix: 'W' },
+    ],
+    revDefaults: { V: 12, I: 2, R: '', P: '' },
+    revSolveAll(v) {
+      let { V, I, R, P } = v;
+      const knownCount = [V, I, R, P].filter(x => x != null && isFinite(x)).length;
+      if (knownCount < 2) return {};
+      if (V != null && I != null) { R = V / I; P = V * I; }
+      else if (V != null && R != null) { I = V / R; P = V * I; }
+      else if (I != null && R != null) { V = I * R; P = V * I; }
+      else if (P != null && V != null) { I = P / V; R = V / I; }
+      else if (P != null && I != null) { V = P / I; R = V / I; }
+      else if (P != null && R != null) { V = Math.sqrt(P * R); I = P / V; }
+      else return {};
+      const results = {};
+      if (v.V == null) results['Voltage'] = { id: 'V', value: V };
+      if (v.I == null) results['Current'] = { id: 'I', value: I };
+      if (v.R == null) results['Resistance'] = { id: 'R', value: R };
+      if (v.P == null) results['Power'] = { id: 'P', value: P };
+      return results;
+    },
     fields: [
       { id: 'V', label: 'Voltage (V)', unit: 'V', default: '' },
       { id: 'I', label: 'Current (I)', unit: 'A', default: '' },
@@ -171,26 +234,127 @@ const TOOLS = {
   },
 };
 
+function buildConstReverseUI(body, tool) {
+  const values = { ...tool.revDefaults };
+  const isSuvat = !!tool.revSolveAll;
+  const fmtV = (n) => isFinite(n) ? parseFloat(n.toPrecision(6)).toString() : '—';
+
+  function getBlank() { return tool.revVars.find(v => values[v.id] === '' || values[v.id] == null); }
+
+  function recompute() {
+    const resEl = body.querySelector('.rev-result');
+    if (!resEl) return;
+
+    if (isSuvat) {
+      const known = {};
+      tool.revVars.forEach(v => { known[v.id] = (values[v.id] === '' || values[v.id] == null) ? null : parseFloat(values[v.id]); });
+      const results = tool.revSolveAll(known);
+      if (!Object.keys(results).length) { resEl.innerHTML = ''; return; }
+      resEl.innerHTML = `<div class="result-grid">${Object.entries(results).map(([label, r]) => {
+        const sv = tool.revVars.find(v => v.id === r.id);
+        return `<div class="result-card"><div class="result-label">${label}</div><div class="result-value">${fmtV(r.value)} ${sv?.suffix || ''}</div></div>`;
+      }).join('')}</div>`;
+      return;
+    }
+
+    const blank = getBlank();
+    if (!blank) {
+      const known = {};
+      tool.revVars.forEach(v => { known[v.id] = parseFloat(values[v.id]); });
+      try {
+        const r = tool.revSolve(known);
+        const sv = tool.revVars.find(v => v.id === r.id);
+        resEl.innerHTML = `<div class="pct-result-card"><div class="pct-result-label">Solving for <strong>${sv?.label || r.id}</strong></div><div class="pct-result-value">${fmtV(r.value)} ${sv?.suffix || ''}</div>${r.extra ? `<div class="pct-result-extra">${r.extra}</div>` : ''}<div class="pct-result-formula">${r.label || ''}</div></div>`;
+      } catch { resEl.innerHTML = ''; }
+      return;
+    }
+    const known = {};
+    tool.revVars.forEach(v => { known[v.id] = (v.id === blank.id) ? null : parseFloat(values[v.id]); });
+    if (tool.revVars.filter(v => v.id !== blank.id).some(v => !isFinite(known[v.id]))) { resEl.innerHTML = ''; return; }
+    try {
+      const r = tool.revSolve(known);
+      const sv = tool.revVars.find(v => v.id === r.id);
+      const inp = body.querySelector(`[data-rvar="${r.id}"]`);
+      if (inp && inp !== document.activeElement) inp.placeholder = `${fmtV(r.value)} ${sv?.suffix || ''}`;
+      resEl.innerHTML = `<div class="pct-result-card"><div class="pct-result-label">Solving for <strong>${sv?.label || r.id}</strong></div><div class="pct-result-value">${fmtV(r.value)} ${sv?.suffix || ''}</div>${r.extra ? `<div class="pct-result-extra">${r.extra}</div>` : ''}<div class="pct-result-formula">${r.label || ''}</div></div>`;
+    } catch { resEl.innerHTML = ''; }
+  }
+
+  function renderHighlight() {
+    if (isSuvat) return;
+    const blank = getBlank();
+    body.querySelectorAll('.pct-var-row[data-var]').forEach(row => {
+      row.classList.toggle('solving-for', row.dataset.var === blank?.id);
+    });
+  }
+
+  body.innerHTML = `
+    <div class="pct-equation">${tool.equation}</div>
+    <p class="pct-hint">${tool.hint}</p>
+    <div class="pct-fields">
+      ${tool.revVars.map(v => `
+        <div class="pct-var-row" data-var="${v.id}">
+          <label class="pct-var-label">${v.label}</label>
+          <div class="pct-var-input-wrap">
+            <input type="number" class="pct-input" data-rvar="${v.id}"
+              value="${values[v.id] !== '' ? values[v.id] : ''}"
+              placeholder="${values[v.id] === '' ? (isSuvat ? 'fill in' : 'blank = solve for me') : ''}"
+              step="any" />
+            ${v.suffix ? `<span class="input-suffix">${v.suffix}</span>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="rev-result"></div>
+  `;
+
+  body.querySelectorAll('.pct-input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      values[inp.dataset.rvar] = inp.value.trim() === '' ? '' : inp.value;
+      renderHighlight(); recompute();
+    });
+    inp.addEventListener('wheel', (e) => {
+      if (document.activeElement !== inp) return;
+      e.preventDefault();
+      const cur = parseFloat(inp.value) || 0;
+      inp.value = cur + (e.deltaY < 0 ? 1 : -1);
+      inp.dispatchEvent(new Event('input'));
+    }, { passive: false });
+  });
+
+  renderHighlight(); recompute();
+}
+
 export function renderConstruction(container, sub = 'concrete') {
   const tool = TOOLS[sub] || TOOLS.concrete;
 
-  container.innerHTML = `
-    <div class="calc-form">
-      <div class="form-tabs">
-        ${Object.entries(TOOLS).map(([k, t]) =>
-          `<button class="form-tab ${k === sub ? 'active' : ''}" data-sub="${k}">${t.label}</button>`
-        ).join('')}
+  const tabsHtml = Object.entries(TOOLS).map(([k, t]) =>
+    `<button class="form-tab ${k === sub ? 'active' : ''}" data-sub="${k}">${t.label}</button>`
+  ).join('');
+
+  if (tool.revVars) {
+    container.innerHTML = `
+      <div class="calc-form">
+        <div class="form-tabs">${tabsHtml}</div>
+        <div class="form-body"></div>
       </div>
-      <div class="form-body">
-        <h2>${tool.label}</h2>
-        <form id="const-form">
-          ${makeForm(tool.fields, 'const')}
-          <button type="submit" class="btn btn-calc-primary">Calculate</button>
-        </form>
-        <div id="const-result" class="calc-output"></div>
+    `;
+    buildConstReverseUI(container.querySelector('.form-body'), tool);
+  } else {
+    container.innerHTML = `
+      <div class="calc-form">
+        <div class="form-tabs">${tabsHtml}</div>
+        <div class="form-body">
+          <h2>${tool.label}</h2>
+          <form id="const-form">
+            ${makeForm(tool.fields, 'const')}
+            <button type="submit" class="btn btn-calc-primary">Calculate</button>
+          </form>
+          <div id="const-result" class="calc-output"></div>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  }
 
   container.querySelectorAll('.form-tab').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -198,22 +362,24 @@ export function renderConstruction(container, sub = 'concrete') {
     });
   });
 
-  container.querySelector('#const-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const fd = {};
-    tool.fields.forEach(f => { fd[f.id] = parseFloat(container.querySelector(`#const-${f.id}`)?.value); });
-    try {
-      const results = tool.compute(fd);
-      container.querySelector('#const-result').innerHTML = `
-        <div class="result-grid">
-          ${Object.entries(results).map(([k, v]) =>
-            `<div class="result-card"><div class="result-label">${k}</div><div class="result-value">${v}</div></div>`
-          ).join('')}
-        </div>
-      `;
-      history.add({ category: 'construction', tool: sub });
-    } catch(err) {
-      container.querySelector('#const-result').innerHTML = `<div class="error">${err.message}</div>`;
-    }
-  });
+  if (!tool.revVars) {
+    container.querySelector('#const-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = {};
+      tool.fields.forEach(f => { fd[f.id] = parseFloat(container.querySelector(`#const-${f.id}`)?.value); });
+      try {
+        const results = tool.compute(fd);
+        container.querySelector('#const-result').innerHTML = `
+          <div class="result-grid">
+            ${Object.entries(results).map(([k, v]) =>
+              `<div class="result-card"><div class="result-label">${k}</div><div class="result-value">${v}</div></div>`
+            ).join('')}
+          </div>
+        `;
+        history.add({ category: 'construction', tool: sub });
+      } catch(err) {
+        container.querySelector('#const-result').innerHTML = `<div class="error">${err.message}</div>`;
+      }
+    });
+  }
 }

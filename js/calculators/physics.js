@@ -12,8 +12,43 @@ function makeForm(fields, idPrefix) {
 
 const TOOLS = {
   kinematics: {
-    label: 'Kinematics',
-    desc: 'Equations of uniform acceleration: s, u, v, a, t',
+    label: 'Kinematics (SUVAT)',
+    desc: 'Leave any two fields blank — solve for them from the other three.',
+    // 5 SUVAT vars: s, u, v, a, t  — any 3 known → solve remaining 2
+    revVars: [
+      { id: 's', label: 'Displacement (s)', suffix: 'm' },
+      { id: 'u', label: 'Initial velocity (u)', suffix: 'm/s' },
+      { id: 'v', label: 'Final velocity (v)', suffix: 'm/s' },
+      { id: 'a', label: 'Acceleration (a)', suffix: 'm/s²' },
+      { id: 't', label: 'Time (t)', suffix: 's' },
+    ],
+    revDefaults: { s: '', u: 0, v: '', a: 9.81, t: 5 },
+    revSolveAll(f) {
+      const known = { ...f };
+      const results = {};
+      const { s, u, v, a, t } = known;
+      // Apply all applicable SUVAT equations
+      if (u != null && a != null && t != null) {
+        if (v == null) results['v = u + at'] = { id: 'v', value: u + a * t, label: `${u} + ${a}×${t}` };
+        if (s == null) results['s = ut + ½at²'] = { id: 's', value: u * t + 0.5 * a * t * t, label: `${u}×${t} + ½×${a}×${t}²` };
+      }
+      if (u != null && v != null && a != null && a !== 0) {
+        if (s == null) results['s = (v²-u²)/2a'] = { id: 's', value: (v*v - u*u) / (2*a), label: `(v²−u²)÷(2a)` };
+        if (t == null) results['t = (v-u)/a'] = { id: 't', value: (v - u) / a, label: `(v−u)÷a` };
+      }
+      if (u != null && v != null && t != null) {
+        if (s == null) results['s = (u+v)/2 × t'] = { id: 's', value: 0.5*(u+v)*t, label: `½(u+v)×t` };
+        if (a == null) results['a = (v-u)/t'] = { id: 'a', value: (v-u)/t, label: `(v−u)÷t` };
+      }
+      if (s != null && u != null && t != null && t !== 0) {
+        if (a == null) results['a = 2(s-ut)/t²'] = { id: 'a', value: 2*(s - u*t)/(t*t), label: `2(s−ut)÷t²` };
+        if (v == null) results['v = 2s/t - u'] = { id: 'v', value: 2*s/t - u, label: `2s÷t − u` };
+      }
+      if (s != null && a != null && t != null && t !== 0) {
+        if (u == null) results['u = s/t - at/2'] = { id: 'u', value: s/t - a*t/2, label: `s÷t − a×t÷2` };
+      }
+      return results;
+    },
     fields: [
       { id: 'u', label: 'Initial velocity (u)', unit: 'm/s', default: 0 },
       { id: 'v', label: 'Final velocity (v)',   unit: 'm/s', default: '' },
@@ -247,6 +282,69 @@ export function renderPhysics(container, sub = 'kinematics') {
 
   if (tool.renderCustom) {
     tool.renderCustom(body);
+    return;
+  }
+
+  if (tool.revVars && tool.revSolveAll) {
+    const values = { ...tool.revDefaults };
+    function fmtV(n) { return isFinite(n) ? parseFloat(n.toPrecision(6)).toString() : '—'; }
+
+    body.innerHTML = `
+      <h3>${tool.label}</h3>
+      <p class="pct-hint">${tool.desc}</p>
+      <div class="pct-fields">
+        ${tool.revVars.map(v => `
+          <div class="pct-var-row" data-var="${v.id}">
+            <label class="pct-var-label">${v.label}</label>
+            <div class="pct-var-input-wrap">
+              <input type="number" class="pct-input" data-pvar="${v.id}"
+                value="${values[v.id] !== '' ? values[v.id] : ''}"
+                placeholder="${values[v.id] === '' ? 'blank = unknown' : ''}"
+                step="any" />
+              ${v.suffix ? `<span class="input-suffix">${v.suffix}</span>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="phys-suvat-results"></div>
+    `;
+
+    function recompute() {
+      const known = {};
+      tool.revVars.forEach(v => {
+        const val = values[v.id];
+        known[v.id] = (val === '' || val == null) ? null : parseFloat(val);
+      });
+      const results = tool.revSolveAll(known);
+      const resEl = body.querySelector('.phys-suvat-results');
+      if (!Object.keys(results).length) { resEl.innerHTML = ''; return; }
+      resEl.innerHTML = `
+        <div class="result-grid">
+          ${Object.entries(results).map(([eq, r]) => `
+            <div class="result-card">
+              <div class="result-label">${eq}</div>
+              <div class="result-value">${fmtV(r.value)} ${tool.revVars.find(v => v.id === r.id)?.suffix || ''}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    body.querySelectorAll('.pct-input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        values[inp.dataset.pvar] = inp.value.trim() === '' ? '' : inp.value;
+        recompute();
+      });
+      inp.addEventListener('wheel', (e) => {
+        if (document.activeElement !== inp) return;
+        e.preventDefault();
+        const cur = parseFloat(inp.value) || 0;
+        inp.value = cur + (e.deltaY < 0 ? 1 : -1);
+        inp.dispatchEvent(new Event('input'));
+      }, { passive: false });
+    });
+
+    recompute();
     return;
   }
 

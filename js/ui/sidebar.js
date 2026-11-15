@@ -1,5 +1,6 @@
 import { CATEGORIES, TOOLS, getToolsByCategory } from '../registry.js';
 import { router } from '../router.js';
+import { icon } from '../icons.js';
 
 export function renderSidebar(container) {
   const nav = document.createElement('nav');
@@ -9,7 +10,7 @@ export function renderSidebar(container) {
   nav.innerHTML = `
     <div class="sidebar-search">
       <div class="sidebar-search-wrap">
-        <span class="sidebar-search-icon">🔍</span>
+        <span class="sidebar-search-icon">${icon('search', {size: 16})}</span>
         <input
           type="search"
           class="sidebar-search-input"
@@ -25,9 +26,9 @@ export function renderSidebar(container) {
       ${CATEGORIES.map(cat => `
         <div class="sidebar-category" data-cat="${cat.id}">
           <button class="sidebar-cat-btn" data-cat="${cat.id}" aria-expanded="true">
-            <span class="cat-icon">${cat.icon}</span>
+            <span class="cat-icon">${icon(cat.id, {size: 18})}</span>
             <span class="cat-label">${cat.label}</span>
-            <span class="cat-chevron">▾</span>
+            <span class="cat-chevron">${icon('chevronDown', {size: 14})}</span>
           </button>
           <ul class="sidebar-tool-list" role="list">
             ${getToolsByCategory(cat.id).map(tool => `

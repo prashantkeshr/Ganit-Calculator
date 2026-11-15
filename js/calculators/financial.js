@@ -12,6 +12,33 @@ function loanEMI({ principal, rate, years }) {
   return { emi, total, interest: total - P };
 }
 
+function loanSolvePrincipal({ emi, rate, years }) {
+  const r = rate / 100 / 12, n = years * 12;
+  if (r === 0) return emi * n;
+  return emi * (Math.pow(1 + r, n) - 1) / (r * Math.pow(1 + r, n));
+}
+
+function loanSolveYears({ principal, rate, emi }) {
+  const r = rate / 100 / 12;
+  if (r === 0) return principal / emi / 12;
+  const val = 1 - (principal * r / emi);
+  if (val <= 0) throw new Error('EMI is too low to cover the interest.');
+  return -Math.log(val) / Math.log(1 + r) / 12;
+}
+
+function loanSolveRate({ principal, emi, years }) {
+  const n = years * 12;
+  // bisection: find r such that EMI(r) = emi
+  let lo = 0.00001, hi = 10;
+  for (let i = 0; i < 100; i++) {
+    const mid = (lo + hi) / 2;
+    const test = principal * mid * Math.pow(1 + mid, n) / (Math.pow(1 + mid, n) - 1);
+    if (test > emi) hi = mid; else lo = mid;
+    if (hi - lo < 1e-9) break;
+  }
+  return ((lo + hi) / 2) * 12 * 100;
+}
+
 function buildAmortization({ principal, rate, years }) {
   const { emi } = loanEMI({ principal, rate, years });
   const r = rate / 100 / 12;
@@ -105,69 +132,166 @@ function makeForm(fields) {
 const TOOLS = {
   loan: {
     label: 'Loan EMI',
-    fields: [
-      { id: 'principal', label: 'Loan Amount', prefix: '$', default: 500000 },
-      { id: 'rate',      label: 'Annual Interest Rate', suffix: '%', default: 8.5 },
-      { id: 'years',     label: 'Term (years)', default: 20, min: 1, max: 50 },
+    solveOptions: [
+      { value: 'emi',       label: 'Monthly EMI' },
+      { value: 'principal', label: 'Loan Amount (P)' },
+      { value: 'rate',      label: 'Annual Interest Rate' },
+      { value: 'years',     label: 'Term (years)' },
     ],
-    compute(f) {
-      const r = loanEMI(f);
-      return `
-        <div class="result-grid">
-          <div class="result-card"><div class="result-label">Monthly EMI</div><div class="result-value">$${fmt(r.emi)}</div></div>
-          <div class="result-card"><div class="result-label">Total Payment</div><div class="result-value">$${fmt(r.total)}</div></div>
-          <div class="result-card"><div class="result-label">Total Interest</div><div class="result-value">$${fmt(r.interest)}</div></div>
-        </div>
-        <details class="amort-details">
-          <summary>View Amortization Schedule</summary>
-          <div class="table-wrap">
-            <table class="data-table">
-              <thead><tr><th>Month</th><th>Payment</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
-              <tbody>${buildAmortization(f).map(row =>
-                `<tr><td>${row.month}</td><td>$${fmt(row.payment)}</td><td>$${fmt(row.principal)}</td><td>$${fmt(row.interest)}</td><td>$${fmt(row.balance)}</td></tr>`
-              ).join('')}</tbody>
-            </table>
+    allFields: [
+      { id: 'emi',       label: 'Monthly EMI',          prefix: '$', default: '' },
+      { id: 'principal', label: 'Loan Amount',          prefix: '$', default: 500000 },
+      { id: 'rate',      label: 'Annual Interest Rate', suffix: '%', default: 8.5 },
+      { id: 'years',     label: 'Term (years)',         default: 20, min: 1, max: 50 },
+    ],
+    get fields() { return this.allFields.filter(f => f.id !== 'emi'); },
+    compute(f, solveFor = 'emi') {
+      let resultHtml = '';
+      const p = f.principal, r = f.rate, y = f.years, e = f.emi;
+      if (solveFor === 'emi') {
+        const res = loanEMI({ principal: p, rate: r, years: y });
+        resultHtml = `
+          <div class="result-grid">
+            <div class="result-card solved"><div class="result-label">Monthly EMI</div><div class="result-value">$${fmt(res.emi)}</div></div>
+            <div class="result-card"><div class="result-label">Total Payment</div><div class="result-value">$${fmt(res.total)}</div></div>
+            <div class="result-card"><div class="result-label">Total Interest</div><div class="result-value">$${fmt(res.interest)}</div></div>
           </div>
-        </details>
-      `;
+          <details class="amort-details">
+            <summary>View Amortization Schedule</summary>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Month</th><th>Payment</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+                <tbody>${buildAmortization({ principal: p, rate: r, years: y }).map(row =>
+                  `<tr><td>${row.month}</td><td>$${fmt(row.payment)}</td><td>$${fmt(row.principal)}</td><td>$${fmt(row.interest)}</td><td>$${fmt(row.balance)}</td></tr>`
+                ).join('')}</tbody>
+              </table>
+            </div>
+          </details>
+        `;
+      } else if (solveFor === 'principal') {
+        const P = loanSolvePrincipal({ emi: e, rate: r, years: y });
+        const res = loanEMI({ principal: P, rate: r, years: y });
+        resultHtml = `
+          <div class="result-grid">
+            <div class="result-card solved"><div class="result-label">Loan Amount (P)</div><div class="result-value">$${fmt(P)}</div></div>
+            <div class="result-card"><div class="result-label">Total Payment</div><div class="result-value">$${fmt(res.total)}</div></div>
+            <div class="result-card"><div class="result-label">Total Interest</div><div class="result-value">$${fmt(res.interest)}</div></div>
+          </div>
+        `;
+      } else if (solveFor === 'years') {
+        const Y = loanSolveYears({ principal: p, rate: r, emi: e });
+        const yrs = Math.ceil(Y * 12) / 12;
+        const res = loanEMI({ principal: p, rate: r, years: yrs });
+        resultHtml = `
+          <div class="result-grid">
+            <div class="result-card solved"><div class="result-label">Term</div><div class="result-value">${fmt(Y)} yrs (${Math.ceil(Y * 12)} months)</div></div>
+            <div class="result-card"><div class="result-label">Total Payment</div><div class="result-value">$${fmt(res.total)}</div></div>
+            <div class="result-card"><div class="result-label">Total Interest</div><div class="result-value">$${fmt(res.interest)}</div></div>
+          </div>
+        `;
+      } else if (solveFor === 'rate') {
+        const R = loanSolveRate({ principal: p, emi: e, years: y });
+        const res = loanEMI({ principal: p, rate: R, years: y });
+        resultHtml = `
+          <div class="result-grid">
+            <div class="result-card solved"><div class="result-label">Annual Interest Rate</div><div class="result-value">${fmt(R)}%</div></div>
+            <div class="result-card"><div class="result-label">Total Payment</div><div class="result-value">$${fmt(res.total)}</div></div>
+            <div class="result-card"><div class="result-label">Total Interest</div><div class="result-value">$${fmt(res.interest)}</div></div>
+          </div>
+        `;
+      }
+      return resultHtml;
     }
   },
   compound: {
     label: 'Compound Interest',
-    fields: [
-      { id: 'principal',     label: 'Principal', prefix: '$', default: 10000 },
-      { id: 'rate',          label: 'Annual Rate', suffix: '%', default: 7 },
-      { id: 'years',         label: 'Years', default: 10 },
-      { id: 'n',             label: 'Compounds per year', default: 12 },
-      { id: 'contribution',  label: 'Monthly contribution', prefix: '$', default: 0 },
+    // Reverse: FV, P, rate, years — solve for any one (n=12, contribution=0 assumed)
+    solveOptions: [
+      { value: 'fv',        label: 'Future Value (FV)' },
+      { value: 'principal', label: 'Principal (P)' },
+      { value: 'rate',      label: 'Annual Rate (r)' },
+      { value: 'years',     label: 'Years (t)' },
     ],
-    compute(f) {
-      const r = compoundInterest(f);
-      return `
-        <div class="result-grid">
-          <div class="result-card"><div class="result-label">Future Value</div><div class="result-value">$${fmt(r.future)}</div></div>
-          <div class="result-card"><div class="result-label">Interest Earned</div><div class="result-value">$${fmt(r.interest)}</div></div>
-          <div class="result-card"><div class="result-label">Total Contributed</div><div class="result-value">$${fmt(f.principal + f.contribution * f.years * 12)}</div></div>
-        </div>
-      `;
+    allFields: [
+      { id: 'fv',           label: 'Future Value',          prefix: '$', default: '' },
+      { id: 'principal',    label: 'Principal',             prefix: '$', default: 10000 },
+      { id: 'rate',         label: 'Annual Rate',           suffix: '%', default: 7 },
+      { id: 'years',        label: 'Years',                              default: 10 },
+      { id: 'n',            label: 'Compounds / year',                   default: 12 },
+      { id: 'contribution', label: 'Monthly contribution',  prefix: '$', default: 0 },
+    ],
+    get fields() { return this.allFields.filter(f => f.id !== 'fv'); },
+    compute(f, solveFor = 'fv') {
+      const { principal: P, rate: r, years: t, n = 12, contribution: contrib = 0, fv: FV } = f;
+      const rN = r / 100 / n;
+      let resultHtml = '';
+
+      if (solveFor === 'fv') {
+        const res = compoundInterest({ principal: P, rate: r, years: t, n, contribution: contrib });
+        resultHtml = `
+          <div class="result-grid">
+            <div class="result-card solved"><div class="result-label">Future Value</div><div class="result-value">$${fmt(res.future)}</div></div>
+            <div class="result-card"><div class="result-label">Interest Earned</div><div class="result-value">$${fmt(res.interest)}</div></div>
+            <div class="result-card"><div class="result-label">Total Contributed</div><div class="result-value">$${fmt(P + contrib * t * 12)}</div></div>
+          </div>
+        `;
+      } else if (solveFor === 'principal') {
+        const factor = Math.pow(1 + rN, n * t);
+        const pv = FV / factor;
+        resultHtml = `<div class="result-grid"><div class="result-card solved"><div class="result-label">Principal (P)</div><div class="result-value">$${fmt(pv)}</div></div></div>`;
+      } else if (solveFor === 'years') {
+        const factor = FV / P;
+        const compT = Math.log(factor) / (n * Math.log(1 + rN));
+        resultHtml = `<div class="result-grid"><div class="result-card solved"><div class="result-label">Years (t)</div><div class="result-value">${fmt(compT)} yrs</div></div></div>`;
+      } else if (solveFor === 'rate') {
+        // bisection: find r s.t. P*(1+r/n)^(n*t) = FV
+        let lo = 0.0001, hi = 500;
+        for (let i = 0; i < 100; i++) {
+          const mid = (lo + hi) / 2;
+          const test = P * Math.pow(1 + mid / 100 / n, n * t);
+          if (test > FV) hi = mid; else lo = mid;
+          if (hi - lo < 1e-8) break;
+        }
+        const R = (lo + hi) / 2;
+        resultHtml = `<div class="result-grid"><div class="result-card solved"><div class="result-label">Annual Rate</div><div class="result-value">${fmt(R)}%</div></div></div>`;
+      }
+      return resultHtml;
     }
   },
   roi: {
     label: 'ROI / CAGR',
-    fields: [
-      { id: 'initial', label: 'Initial Investment', prefix: '$', default: 10000 },
-      { id: 'final',   label: 'Final Value', prefix: '$', default: 15000 },
-      { id: 'years',   label: 'Years (for CAGR)', default: 3 },
+    solveOptions: [
+      { value: 'roi',   label: 'ROI %' },
+      { value: 'cagr',  label: 'CAGR %' },
+      { value: 'final', label: 'Final Value' },
     ],
-    compute(f) {
-      const r1 = roi(f), r2 = cagr(f);
-      return `
-        <div class="result-grid">
-          <div class="result-card"><div class="result-label">ROI</div><div class="result-value">${fmt(r1.roi)}%</div></div>
-          <div class="result-card"><div class="result-label">CAGR</div><div class="result-value">${fmt(r2.cagr)}%</div></div>
-          <div class="result-card"><div class="result-label">Gain</div><div class="result-value">$${fmt(f.final - f.initial)}</div></div>
-        </div>
-      `;
+    allFields: [
+      { id: 'initial', label: 'Initial Investment', prefix: '$', default: 10000 },
+      { id: 'final',   label: 'Final Value',         prefix: '$', default: '' },
+      { id: 'years',   label: 'Years (for CAGR)',                 default: 3 },
+    ],
+    get fields() { return this.allFields.filter(f => f.id !== 'final'); },
+    compute(f, solveFor = 'roi') {
+      const { initial, final: fv, years } = f;
+      let resultHtml = '';
+      if (solveFor === 'roi') {
+        const r1 = roi({ initial, final: fv }), r2 = cagr({ initial, final: fv, years });
+        resultHtml = `
+          <div class="result-grid">
+            <div class="result-card solved"><div class="result-label">ROI</div><div class="result-value">${fmt(r1.roi)}%</div></div>
+            <div class="result-card solved"><div class="result-label">CAGR</div><div class="result-value">${fmt(r2.cagr)}%</div></div>
+            <div class="result-card"><div class="result-label">Gain</div><div class="result-value">$${fmt(fv - initial)}</div></div>
+          </div>
+        `;
+      } else if (solveFor === 'cagr') {
+        const r2 = cagr({ initial, final: fv, years });
+        resultHtml = `<div class="result-grid"><div class="result-card solved"><div class="result-label">CAGR</div><div class="result-value">${fmt(r2.cagr)}%</div></div></div>`;
+      } else if (solveFor === 'final') {
+        const roiPct = f.roiPct || 50;
+        const finalVal = initial * (1 + roiPct / 100);
+        resultHtml = `<div class="result-grid"><div class="result-card solved"><div class="result-label">Final Value</div><div class="result-value">$${fmt(finalVal)}</div></div></div>`;
+      }
+      return resultHtml;
     }
   },
   retirement: {
@@ -213,6 +337,20 @@ const TOOLS = {
 
 export function renderFinancial(container, sub = 'loan') {
   const tool = TOOLS[sub] || TOOLS.loan;
+  const hasReverse = !!tool.solveOptions;
+
+  const solveForHtml = hasReverse ? `
+    <div class="form-row solve-for-row">
+      <label>Solve for</label>
+      <div class="input-wrapper">
+        <select id="fin-solve-for" class="calc-select">
+          ${tool.solveOptions.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+  ` : '';
+
+  const fieldsToShow = hasReverse ? tool.allFields : tool.fields;
 
   container.innerHTML = `
     <div class="calc-form">
@@ -224,7 +362,8 @@ export function renderFinancial(container, sub = 'loan') {
       <div class="form-body">
         <h2>${tool.label}</h2>
         <form id="fin-form">
-          ${makeForm(tool.fields)}
+          ${solveForHtml}
+          ${makeForm(fieldsToShow)}
           <button type="submit" class="btn btn-calc-primary">Calculate</button>
         </form>
         <div id="fin-result" class="calc-output"></div>
@@ -238,14 +377,38 @@ export function renderFinancial(container, sub = 'loan') {
     });
   });
 
+  if (hasReverse) {
+    const solveSelect = container.querySelector('#fin-solve-for');
+    function updateFieldVisibility() {
+      const sv = solveSelect.value;
+      tool.allFields.forEach(f => {
+        const row = container.querySelector(`#${f.id}`)?.closest('.form-row');
+        if (!row) return;
+        if (f.id === sv) {
+          row.style.opacity = '0.4';
+          row.querySelector('input').disabled = true;
+          row.querySelector('input').placeholder = '← computed';
+        } else {
+          row.style.opacity = '';
+          row.querySelector('input').disabled = false;
+          row.querySelector('input').placeholder = '';
+        }
+      });
+    }
+    solveSelect.addEventListener('change', updateFieldVisibility);
+    updateFieldVisibility();
+  }
+
   container.querySelector('#fin-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    const solveFor = hasReverse ? (container.querySelector('#fin-solve-for')?.value || tool.solveOptions[0].value) : null;
+    const fieldsForRead = hasReverse ? tool.allFields.filter(f => f.id !== solveFor) : tool.fields;
     const fd = {};
-    tool.fields.forEach(f => {
+    fieldsForRead.forEach(f => {
       fd[f.id] = parseFloat(container.querySelector(`#${f.id}`)?.value) || 0;
     });
     try {
-      const html = tool.compute(fd);
+      const html = hasReverse ? tool.compute(fd, solveFor) : tool.compute(fd);
       container.querySelector('#fin-result').innerHTML = html;
       history.add({ category: 'financial', tool: sub, inputs: fd });
     } catch(err) {

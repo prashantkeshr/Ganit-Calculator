@@ -7,6 +7,7 @@ import { initCommandPalette } from './ui/command-palette.js';
 import { initHistoryPanel } from './ui/history-panel.js';
 import { injectFooter, BRAND } from './brand.js';
 import { mathEngine } from './math-engine.js';
+import { updateSEO } from './seo.js';
 import './api/js-api.js';
 import './keyboard.js';
 
@@ -45,8 +46,8 @@ async function renderCalc(path, params) {
   // Call cleanup for previous calculator (remove keyboard listeners etc.)
   if (currentCleanup) { try { currentCleanup(); } catch {} currentCleanup = null; }
 
-  // Update page title
-  document.title = `${formatTitle(path, params)} — Calculator ~ by Ganit Technology`;
+  // Update SEO meta + title
+  updateSEO(path, params);
 
   // Find matching route
   let loader = null;

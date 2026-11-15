@@ -61,6 +61,29 @@ function waterIntake({ weight, activity, climate, unit = 'metric' }) {
 const TOOLS = {
   bmi: {
     label: 'BMI Calculator',
+    // Reverse-capable: weight, height, bmi — leave one blank to solve
+    reverseVars: [
+      { id: 'weight', label: 'Weight (W)', suffix: ' kg' },
+      { id: 'height', label: 'Height (H)', suffix: ' cm' },
+      { id: 'bmiVal', label: 'BMI', hint: '18.5–24.9 = Normal' },
+    ],
+    reverseDefaults: { weight: 70, height: 175, bmiVal: '' },
+    reverseSolve(v) {
+      const { weight, height, bmiVal } = v;
+      if (weight == null) {
+        const W = bmiVal * Math.pow(height / 100, 2);
+        return { id: 'weight', value: W, unit: ' kg', label: `BMI × (H÷100)²`, extra: bmi({weight:W,height}).category };
+      }
+      if (height == null) {
+        const H = Math.sqrt(weight / bmiVal) * 100;
+        return { id: 'height', value: H, unit: ' cm', label: `√(W÷BMI) × 100` };
+      }
+      const B = weight / Math.pow(height / 100, 2);
+      const cat = B < 18.5 ? 'Underweight' : B < 25 ? 'Normal' : B < 30 ? 'Overweight' : 'Obese';
+      return { id: 'bmiVal', value: B, label: `W ÷ (H÷100)²`, extra: cat };
+    },
+    equation: 'BMI = W ÷ (H ÷ 100)²',
+    hint: 'Leave any one field blank — it will be computed.',
     fields: [
       { id: 'weight', label: 'Weight', suffix: 'kg', default: 70 },
       { id: 'height', label: 'Height', suffix: 'cm', default: 175 },
@@ -158,47 +181,130 @@ const TOOLS = {
   },
 };
 
+function buildReverseUI(container, tool, sub) {
+  const values = { ...tool.reverseDefaults };
+
+  function getBlank() { return tool.reverseVars.find(v => values[v.id] === '' || values[v.id] == null); }
+
+  function renderResult() {
+    const resEl = container.querySelector('.rev-result');
+    if (!resEl) return;
+    const blank = getBlank();
+    const known = {};
+    tool.reverseVars.forEach(v => { known[v.id] = (v.id === blank?.id) ? null : parseFloat(values[v.id]); });
+    if (blank && tool.reverseVars.filter(v => v.id !== blank.id).some(v => !isFinite(known[v.id]))) { resEl.innerHTML = ''; return; }
+    try {
+      const r = tool.reverseSolve(known);
+      const sv = tool.reverseVars.find(v => v.id === r.id);
+      const fmtV = (n) => isFinite(n) ? parseFloat(n.toPrecision(6)).toString() : '—';
+      resEl.innerHTML = `
+        <div class="pct-result-card">
+          <div class="pct-result-label">Solving for <strong>${sv?.label || r.id}</strong></div>
+          <div class="pct-result-value">${fmtV(r.value)}${r.unit || ''}</div>
+          ${r.extra ? `<div class="pct-result-extra">${r.extra}</div>` : ''}
+          <div class="pct-result-formula">${r.label}</div>
+        </div>
+      `;
+      const inp = container.querySelector(`[data-rvar="${r.id}"]`);
+      if (inp && inp !== document.activeElement) inp.placeholder = `${fmtV(r.value)}${r.unit || ''}`;
+    } catch { resEl.innerHTML = ''; }
+  }
+
+  function renderHighlight() {
+    const blank = getBlank();
+    container.querySelectorAll('.pct-var-row[data-var]').forEach(row => {
+      row.classList.toggle('solving-for', row.dataset.var === blank?.id);
+    });
+  }
+
+  const formBody = container.querySelector('.rev-form-body');
+  formBody.innerHTML = `
+    <div class="pct-equation">${tool.equation}</div>
+    <p class="pct-hint">${tool.hint}</p>
+    <div class="pct-fields">
+      ${tool.reverseVars.map(v => `
+        <div class="pct-var-row" data-var="${v.id}">
+          <label class="pct-var-label">${v.label}${v.hint ? `<span class="rev-var-hint"> — ${v.hint}</span>` : ''}</label>
+          <div class="pct-var-input-wrap">
+            <input type="number" class="pct-input" data-rvar="${v.id}"
+              value="${values[v.id] !== '' ? values[v.id] : ''}"
+              placeholder="${values[v.id] === '' ? 'blank = solve for me' : ''}"
+              step="any" />
+            ${v.suffix ? `<span class="input-suffix">${v.suffix}</span>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="rev-result"></div>
+  `;
+
+  formBody.querySelectorAll('.pct-input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      values[inp.dataset.rvar] = inp.value.trim() === '' ? '' : inp.value;
+      renderHighlight(); renderResult();
+    });
+    inp.addEventListener('wheel', (e) => {
+      if (document.activeElement !== inp) return;
+      e.preventDefault();
+      const cur = parseFloat(inp.value) || 0;
+      inp.value = cur + (e.deltaY < 0 ? 1 : -1);
+      inp.dispatchEvent(new Event('input'));
+    }, { passive: false });
+  });
+
+  renderHighlight(); renderResult();
+}
+
 export function renderHealth(container, sub = 'bmi') {
   const tool = TOOLS[sub] || TOOLS.bmi;
 
-  container.innerHTML = `
-    <div class="calc-form">
-      <div class="form-tabs">
-        ${Object.entries(TOOLS).map(([k, t]) =>
-          `<button class="form-tab ${k === sub ? 'active' : ''}" data-sub="${k}">${t.label}</button>`
-        ).join('')}
+  const tabsHtml = Object.entries(TOOLS).map(([k, t]) =>
+    `<button class="form-tab ${k === sub ? 'active' : ''}" data-sub="${k}">${t.label}</button>`
+  ).join('');
+
+  if (tool.reverseVars) {
+    container.innerHTML = `
+      <div class="calc-form">
+        <div class="form-tabs">${tabsHtml}</div>
+        <div class="form-body rev-form-body"></div>
       </div>
-      <div class="form-body">
-        <h2>${tool.label}</h2>
-        <form id="health-form">
-          ${tool.fields.map(f => `
-            <div class="form-row">
-              <label>${f.label}</label>
-              <input type="number" id="${f.id}" value="${f.default ?? ''}" step="any">
-            </div>
-          `).join('')}
-          <button type="submit" class="btn btn-calc-primary">Calculate</button>
-        </form>
-        <div id="health-result" class="calc-output"></div>
+    `;
+    buildReverseUI(container, tool, sub);
+  } else {
+    container.innerHTML = `
+      <div class="calc-form">
+        <div class="form-tabs">${tabsHtml}</div>
+        <div class="form-body">
+          <h2>${tool.label}</h2>
+          <form id="health-form">
+            ${tool.fields.map(f => `
+              <div class="form-row">
+                <label>${f.label}</label>
+                <input type="number" id="${f.id}" value="${f.default ?? ''}" step="any">
+              </div>
+            `).join('')}
+            <button type="submit" class="btn btn-calc-primary">Calculate</button>
+          </form>
+          <div id="health-result" class="calc-output"></div>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+    container.querySelector('#health-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = {};
+      tool.fields.forEach(f => { fd[f.id] = parseFloat(container.querySelector(`#${f.id}`)?.value) || 0; });
+      try {
+        container.querySelector('#health-result').innerHTML = tool.compute(fd);
+        history.add({ category: 'health', tool: sub, inputs: fd });
+      } catch(err) {
+        container.querySelector('#health-result').innerHTML = `<div class="error">${err.message}</div>`;
+      }
+    });
+  }
 
   container.querySelectorAll('.form-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       import('../router.js').then(({ router }) => router.go(`/health/${btn.dataset.sub}`));
     });
-  });
-
-  container.querySelector('#health-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const fd = {};
-    tool.fields.forEach(f => { fd[f.id] = parseFloat(container.querySelector(`#${f.id}`)?.value) || 0; });
-    try {
-      container.querySelector('#health-result').innerHTML = tool.compute(fd);
-      history.add({ category: 'health', tool: sub, inputs: fd });
-    } catch(err) {
-      container.querySelector('#health-result').innerHTML = `<div class="error">${err.message}</div>`;
-    }
   });
 }
