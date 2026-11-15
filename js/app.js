@@ -8,6 +8,7 @@ import { initHistoryPanel } from './ui/history-panel.js';
 import { injectFooter, BRAND } from './brand.js';
 import { mathEngine } from './math-engine.js';
 import { updateSEO } from './seo.js';
+import { history } from './history.js';
 import './api/js-api.js';
 import './keyboard.js';
 
@@ -35,6 +36,7 @@ const CALC_MODULES = {
   '/calculus/:sub':          () => import('./calculators/calculus.js').then(m => m.renderCalculus),
   '/unit-converter/:sub':    () => import('./calculators/unit-converter.js').then(m => m.renderUnitConverter),
   '/gpa/:sub':               () => import('./calculators/gpa.js').then(m => m.renderGpaCalculator),
+  '/time/:sub':              () => import('./calculators/time.js').then(m => m.renderTime),
 };
 
 let currentCleanup = null;
@@ -194,8 +196,37 @@ async function boot() {
     .on('/unit-converter', ({ params }) => renderCalc('/unit-converter/:sub', { ...params, sub: 'length' }))
     .on('/gpa/:sub', ({ params }) => renderCalc('/gpa/:sub', params))
     .on('/gpa', ({ params }) => renderCalc('/gpa/:sub', { ...params, sub: 'gpa' }))
+    .on('/time/:sub', ({ params }) => renderCalc('/time/:sub', params))
+    .on('/time', ({ params }) => renderCalc('/time/:sub', { ...params, sub: 'duration' }))
+    .on('/history', () => renderHistoryPage())
     .on('/about', () => renderAbout())
     .on('/privacy', () => renderPrivacy());
+
+  // Global: ± stepper buttons for all reverse-calc inputs
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pct-step-btn');
+    if (!btn) return;
+    const wrap = btn.closest('.pct-var-input-wrap');
+    const inp = wrap?.querySelector('.pct-input');
+    if (!inp) return;
+    e.preventDefault();
+    const dir = btn.classList.contains('pct-step-up') ? 1 : -1;
+    const cur = parseFloat(inp.value) || 0;
+    inp.value = parseFloat((cur + dir).toPrecision(10));
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  // Global: arrow key increment for .pct-input (non-time)
+  document.addEventListener('keydown', (e) => {
+    if (!e.target.classList.contains('pct-input')) return;
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+    if (e.target.closest('.time-input-wrap')) return;
+    e.preventDefault();
+    const inp = e.target;
+    const cur = parseFloat(inp.value) || 0;
+    inp.value = parseFloat((cur + (e.key === 'ArrowUp' ? 1 : -1)).toPrecision(10));
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+  });
 
   // Show app, hide splash
   setTimeout(() => {
@@ -208,6 +239,107 @@ async function boot() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js').catch(() => {});
   }
+}
+
+async function renderHistoryPage() {
+  const main = document.getElementById('main-content');
+  updateSEO('/history');
+  document.title = 'Calculation History — Ganit Calculator';
+  main.innerHTML = `
+    <div class="history-page">
+      <div class="history-page-header">
+        <h1>Calculation History</h1>
+        <button id="hpage-clear" class="btn btn-sm btn-danger">Clear All</button>
+      </div>
+      <div class="history-page-tabs">
+        <button class="form-tab active" data-tab="all">All</button>
+        <button class="form-tab" data-tab="saved">★ Saved</button>
+      </div>
+      <div id="hpage-list" class="history-page-list"></div>
+    </div>
+  `;
+
+  let activeTab = 'all';
+
+  async function refresh() {
+    const items = activeTab === 'saved'
+      ? await history.getAll({ limit: 500, starred: true })
+      : await history.getAll({ limit: 500 });
+
+    const list = main.querySelector('#hpage-list');
+    if (!items.length) {
+      list.innerHTML = `<div class="history-empty" style="padding:40px 0;text-align:center;color:var(--color-text-muted)">${
+        activeTab === 'saved' ? 'No saved calculations yet.<br>Click ☆ on any entry to save it.' : 'No history yet. Start calculating!'
+      }</div>`;
+      return;
+    }
+
+    const groups = {};
+    items.forEach(item => {
+      const d = new Date(item.timestamp);
+      const key = d.toLocaleDateString('en', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+
+    list.innerHTML = Object.entries(groups).map(([date, entries]) => `
+      <div class="history-group">
+        <div class="history-group-label">${date}</div>
+        ${entries.map(e => `
+          <div class="history-page-item${e.starred ? ' starred' : ''}" data-id="${e.id}">
+            <button class="history-star btn btn-icon${e.starred ? ' active' : ''}" data-id="${e.id}">${e.starred ? '★' : '☆'}</button>
+            <div class="history-page-item-body">
+              <div class="history-expr">${e.expression || e.tool || e.category || '—'}</div>
+              ${e.result != null ? `<div class="history-result">= ${e.result}</div>` : ''}
+              <div class="history-meta">${new Date(e.timestamp).toLocaleTimeString()} · ${e.category || ''}</div>
+            </div>
+            <button class="history-del btn btn-icon" data-id="${e.id}" title="Delete entry">×</button>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.history-star').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const starred = await history.toggleStar(parseInt(btn.dataset.id));
+        btn.textContent = starred ? '★' : '☆';
+        btn.classList.toggle('active', starred);
+        btn.closest('.history-page-item').classList.toggle('starred', starred);
+        if (activeTab === 'saved' && !starred) btn.closest('.history-page-item').remove();
+      });
+    });
+
+    list.querySelectorAll('.history-del').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        await history.delete(parseInt(btn.dataset.id));
+        btn.closest('.history-page-item').remove();
+      });
+    });
+  }
+
+  main.querySelector('#hpage-clear').addEventListener('click', async () => {
+    const msg = activeTab === 'saved' ? 'Remove all saved calculations?' : 'Clear all history?';
+    if (!confirm(msg)) return;
+    if (activeTab === 'saved') {
+      const items = await history.getAll({ starred: true });
+      for (const item of items) await history.toggleStar(item.id);
+    } else {
+      await history.clear();
+    }
+    refresh();
+  });
+
+  main.querySelectorAll('.form-tab[data-tab]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      main.querySelectorAll('.form-tab[data-tab]').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeTab = tab.dataset.tab;
+      refresh();
+    });
+  });
+
+  history.on('add', refresh);
+  refresh();
 }
 
 function renderAbout() {

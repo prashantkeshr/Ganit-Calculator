@@ -276,11 +276,12 @@ function buildAreaReverseUI(formEl, shape) {
       ${shape.revVars.map(v => `
         <div class="pct-var-row" data-var="${v.id}">
           <label class="pct-var-label">${v.label}</label>
-          <div class="pct-var-input-wrap">
-            <input type="number" class="pct-input" data-avar="${v.id}"
+          <div class="pct-var-input-wrap has-steppers">
+            <button type="button" class="pct-step-btn pct-step-dn" tabindex="-1" aria-label="Decrease">−</button>
+            <input type="text" inputmode="decimal" class="pct-input" data-avar="${v.id}"
               value="${values[v.id] !== '' ? values[v.id] : ''}"
-              placeholder="${values[v.id] === '' ? 'blank = solve for me' : ''}"
-              step="any" />
+              placeholder="${values[v.id] === '' ? 'blank → auto-computed' : ''}" />
+            <button type="button" class="pct-step-btn pct-step-up" tabindex="-1" aria-label="Increase">+</button>
           </div>
         </div>
       `).join('')}

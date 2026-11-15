@@ -228,17 +228,18 @@ function buildToolUI(container, tool) {
   const fieldsHtml = tool.vars.map(v => `
     <div class="pct-var-row" data-var="${v.id}">
       <label class="pct-var-label">${v.label}</label>
-      <div class="pct-var-input-wrap">
+      <div class="pct-var-input-wrap has-steppers">
         ${v.prefix ? `<span class="input-prefix">${v.prefix}</span>` : ''}
+        <button type="button" class="pct-step-btn pct-step-dn" tabindex="-1" aria-label="Decrease">−</button>
         <input
-          type="number"
+          type="text"
+          inputmode="decimal"
           class="pct-input"
           data-var="${v.id}"
           value="${values[v.id] !== '' ? values[v.id] : ''}"
-          placeholder="${values[v.id] === '' ? 'blank = solve for me' : ''}"
-          step="any"
-          ${v.min != null ? `min="${v.min}"` : ''}
+          placeholder="${values[v.id] === '' ? 'blank → auto-computed' : ''}"
         />
+        <button type="button" class="pct-step-btn pct-step-up" tabindex="-1" aria-label="Increase">+</button>
         ${v.suffix ? `<span class="input-suffix">${v.suffix}</span>` : ''}
       </div>
     </div>

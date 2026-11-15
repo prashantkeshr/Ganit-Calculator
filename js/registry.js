@@ -60,6 +60,11 @@ export const TOOLS = [
   { id: 'datetime.add',         category: 'datetime',     label: 'Add / Subtract Date',      path: '/datetime/add' },
   { id: 'datetime.timezone',    category: 'datetime',     label: 'Timezone Converter',       path: '/datetime/timezone' },
   { id: 'datetime.age',         category: 'datetime',     label: 'Age Calculator',           path: '/age' },
+  // Time Calculator
+  { id: 'time.duration',        category: 'datetime',     label: 'Time Duration',            path: '/time/duration' },
+  { id: 'time.add',             category: 'datetime',     label: 'Add / Subtract Time',      path: '/time/add' },
+  { id: 'time.convert',         category: 'datetime',     label: 'Time Unit Converter',      path: '/time/convert' },
+  { id: 'time.speed',           category: 'datetime',     label: 'Speed / Pace',             path: '/time/speed' },
   // Health
   { id: 'health.bmi',           category: 'health',       label: 'BMI',                      path: '/health/bmi' },
   { id: 'health.bmr',           category: 'health',       label: 'BMR / TDEE',               path: '/health/bmr' },

@@ -43,6 +43,13 @@ export function renderSidebar(container) {
       `).join('')}
     </div>
 
+    <div class="sidebar-quick">
+      <a class="sidebar-history-link" href="#/history">
+        ${icon('history', {size: 15})}
+        <span>Calculation History</span>
+      </a>
+    </div>
+
     <div class="sidebar-footer">
       <img src="assets/brand/ganit.png" alt="Ganit Technology" class="sidebar-footer-logo" title="Ganit Technology · Powered by Dhurta Organisation" />
     </div>
