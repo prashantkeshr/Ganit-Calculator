@@ -158,10 +158,26 @@ async function boot() {
   }
 
   const sidebarToggle = document.getElementById('header-sidebar-toggle');
+  const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+  const appEl = document.getElementById('app');
+
+  function openSidebar()  { appEl?.classList.add('sidebar-open'); }
+  function closeSidebar() { appEl?.classList.remove('sidebar-open'); }
+
   if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', () =>
-      document.dispatchEvent(new CustomEvent('ganit:toggle-sidebar')));
+    sidebarToggle.addEventListener('click', () => {
+      if (window.innerWidth <= 768) {
+        appEl?.classList.contains('sidebar-open') ? closeSidebar() : openSidebar();
+      } else {
+        document.dispatchEvent(new CustomEvent('ganit:toggle-sidebar'));
+      }
+    });
   }
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', closeSidebar);
+  }
+  // Auto-close sidebar on mobile when navigating
+  router.onChange(() => { if (window.innerWidth <= 768) closeSidebar(); });
 
   // Listen for close-overlays (Escape)
   document.addEventListener('ganit:close-overlays', () => {

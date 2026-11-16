@@ -313,6 +313,8 @@ button { cursor: pointer; }
 .btn-bitwise { font-size: 0.75rem; color: var(--color-secondary); height: 44px; }
 .btn-hex { color: var(--color-accent); }
 .btn-span-2 { grid-column: span 2; }
+/* Basic calc: + should sit at col 4 of the 1-2-3 row, not span */
+.calc-basic .calc-buttons .btn-span-2 { grid-column: auto; }
 .btn-zero { grid-column: span 2; }
 .btn-sm { height: 32px; padding: 0 10px; font-size: 0.8rem; }
 .btn-icon { width: 34px; height: 34px; border-radius: 50%; padding: 0; }
@@ -503,28 +505,140 @@ footer.ganit-footer { grid-column: 1 / -1; }
 .bit-grid { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
 
 /* ====================================================
+   CANVAS HISTORY (Xiaomi-style stacked display)
+   ==================================================== */
+.calc-display-wrap {
+  display: flex; flex-direction: column;
+  background: rgba(7,16,39,0.85); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 12px;
+}
+.calc-display-wrap::before {
+  content: ''; display: block; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,196,232,0.35), transparent);
+  flex-shrink: 0;
+}
+.calc-history-feed {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 10px 16px 2px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  min-height: 90px; max-height: 180px;
+  gap: 0;
+}
+.calc-history-feed::-webkit-scrollbar { width: 2px; }
+.calc-history-feed::-webkit-scrollbar-thumb { background: rgba(0,196,232,0.12); }
+.calc-hist-sep {
+  width: 100%; border: none; border-top: 1px dashed rgba(0,196,232,0.12);
+  margin: 4px 0; opacity: 0.6;
+}
+.calc-hist-entry {
+  display: flex; flex-direction: column; align-items: flex-end;
+  padding: 2px 0; cursor: pointer; transition: opacity 0.15s;
+}
+.calc-hist-entry:hover { opacity: 0.8 !important; }
+.calc-hist-entry.fresh { animation: histIn 0.28s cubic-bezier(0.22,0.9,0.44,1); }
+@keyframes histIn { from { opacity: 0; transform: translateY(6px) scale(0.98); } to {} }
+.calc-hist-expr {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--color-text-muted); line-height: 1.4; text-align: right;
+  word-break: break-all;
+}
+.calc-hist-result {
+  font-family: var(--font-mono); font-size: 0.82rem; font-weight: 600;
+  color: var(--color-primary); opacity: 0.6; line-height: 1.4;
+}
+.calc-active-display {
+  padding: 10px 16px 14px;
+  border-top: 1px solid rgba(0,196,232,0.08);
+  flex-shrink: 0;
+}
+/* keep old .calc-display backward compat for other calcs */
+.calc-display {
+  background: rgba(7,16,39,0.85); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: 16px 20px 14px;
+  margin-bottom: 12px; min-height: 100px; position: relative; overflow: hidden;
+}
+.calc-display::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,196,232,0.35), transparent);
+}
+
+/* ====================================================
    RESPONSIVE
    ==================================================== */
+/* Backdrop hidden on desktop */
+.sidebar-backdrop { display: none; }
+
+/* ── Sidebar mobile drawer ── */
 @media (max-width: 768px) {
-  :root { --sidebar-w: 0px; --header-h: 54px; }
-  .app { grid-template-columns: 0 1fr; }
-  .header-logo-zone { width: 54px; padding: 0 12px; border-right: none; }
+  :root { --sidebar-w: 260px; --header-h: 54px; }
+  .app { grid-template-columns: 1fr; }
+
+  /* Sidebar becomes a fixed overlay drawer */
+  #sidebar-container {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-w); z-index: 500;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    grid-row: auto;
+  }
+  .app.sidebar-open #sidebar-container { transform: translateX(0); }
+
+  /* Backdrop */
+  .sidebar-backdrop {
+    display: block !important;
+    position: fixed; inset: 0; z-index: 499;
+    background: rgba(7,16,39,0.6); backdrop-filter: blur(4px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .app.sidebar-open .sidebar-backdrop { opacity: 1; pointer-events: all; }
+
+  /* Header compact */
+  .header-logo-zone { width: 52px; padding: 0 10px; border-right: none; }
   .header-logo-text { display: none; }
-  .header-search { min-width: 120px; }
-  .ganit-sidebar { display: none; }
+  .header-search { min-width: 0; padding: 7px 10px; }
+  .header-search-text, .header-search-kbd { display: none; }
+  .header-action-btn span:last-child { display: none; }
+  .header-action-btn { padding: 7px 8px; }
+  #header-sidebar-toggle { display: flex !important; }
+
+  /* Hide calc-tape on mobile — not enough space */
+  .calc-tape { display: none !important; }
+
+  /* Full width main */
+  .ganit-main { flex-direction: column; }
+  #main-content { padding: 14px 14px; }
+
+  /* Calculator containers: full width */
+  .calc-basic, .calc-scientific { max-width: 100%; }
   .calc-graph { grid-template-columns: 1fr; height: auto; }
   .calc-percentage, .calc-area { grid-template-columns: 1fr; }
   .calc-sci-buttons { grid-template-columns: repeat(4, 1fr); }
   .eng-buttons { grid-template-columns: repeat(4, 1fr); }
   .result-grid { grid-template-columns: repeat(2, 1fr); }
-  #main-content { padding: 14px 16px; }
-  .btn { height: 46px; }
+  .btn { height: 48px; }
+
+  /* Dashboard full screen on mobile */
+  .dashboard-overlay { padding: 0; align-items: stretch; }
+  .db-modal { border-radius: 0; min-height: 100vh; }
+  .db-entries { grid-template-columns: 1fr; }
+  .db-search { width: 140px; }
+  .db-toolbar { gap: 4px; }
 }
+
 @media (max-width: 480px) {
   .calc-sci-buttons { grid-template-columns: repeat(3, 1fr); }
   .form-row label { min-width: 100%; }
   .history-panel { width: 100%; }
   .header-search { display: none; }
+  .btn { height: 44px; font-size: 0.95rem; }
+  .calc-history-feed { min-height: 70px; max-height: 130px; }
+
+  /* Dashboard toolbar: wrap */
+  .db-header { flex-direction: column; align-items: flex-start; }
+  .db-toolbar { width: 100%; justify-content: space-between; }
+  .db-search { flex: 1; width: auto; }
 }
 
 /* ====================================================

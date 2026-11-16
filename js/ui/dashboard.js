@@ -1,10 +1,35 @@
 import { history } from '../history.js';
-import { CATEGORIES, TOOLS } from '../registry.js';
+import { CATEGORIES, TOOLS, getToolsByCategory } from '../registry.js';
 
 let overlay = null;
 let isOpen = false;
-let _tab = 'all';
+let _tab = 'calculators'; // default tab is now the calculator hub
 let _q = '';
+
+function renderCalcHub(body) {
+  body.innerHTML = `
+    <div class="db-hub">
+      <div class="db-hub-title">All Calculators</div>
+      <div class="db-hub-grid">
+        ${CATEGORIES.map(cat => {
+          const tools = getToolsByCategory(cat.id);
+          const firstPath = tools[0]?.path || '/';
+          return `
+            <a class="db-hub-tile" href="#${firstPath}" data-cat="${cat.id}">
+              <span class="db-hub-ico">${cat.icon}</span>
+              <span class="db-hub-lbl">${cat.label}</span>
+              <span class="db-hub-cnt">${tools.length} tool${tools.length !== 1 ? 's' : ''}</span>
+            </a>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  // Close dashboard when navigating
+  body.querySelectorAll('.db-hub-tile').forEach(a => {
+    a.addEventListener('click', () => close());
+  });
+}
 
 function timeAgo(ts) {
   const d = Date.now() - ts;
@@ -26,6 +51,8 @@ function pathForEntry(e) {
 async function render() {
   if (!overlay || !isOpen) return;
   const body = overlay.querySelector('.db-body');
+
+  if (_tab === 'calculators') { renderCalcHub(body); return; }
 
   let items = _tab === 'saved'
     ? await history.getAll({ limit: 500, starred: true })
@@ -123,14 +150,15 @@ export function initDashboard() {
   overlay.innerHTML = `
     <div class="db-modal">
       <div class="db-header">
-        <div class="db-title"><span>📊</span> Calculation Dashboard</div>
+        <div class="db-title"><span>📊</span> Dashboard</div>
         <div class="db-toolbar">
-          <input type="search" class="db-search" placeholder="Search…" autocomplete="off" />
+          <input type="search" class="db-search" placeholder="Search history…" autocomplete="off" />
           <div class="db-tabs">
-            <button class="form-tab active" data-tab="all">All</button>
+            <button class="form-tab active" data-tab="calculators">🧮 Calculators</button>
+            <button class="form-tab" data-tab="all">History</button>
             <button class="form-tab" data-tab="saved">★ Saved</button>
           </div>
-          <button class="db-clear btn btn-sm btn-danger">Clear All</button>
+          <button class="db-clear btn btn-sm btn-danger">Clear</button>
           <button class="db-close btn btn-icon" title="Close (Esc)">✕</button>
         </div>
       </div>
@@ -170,9 +198,9 @@ export function openDashboard() {
   overlay.classList.remove('hidden');
   isOpen = true;
   _q = '';
-  _tab = 'all';
+  _tab = 'calculators';
   const si = overlay.querySelector('.db-search');
   if (si) si.value = '';
-  overlay.querySelectorAll('.form-tab[data-tab]').forEach(t => t.classList.toggle('active', t.dataset.tab === 'all'));
+  overlay.querySelectorAll('.form-tab[data-tab]').forEach(t => t.classList.toggle('active', t.dataset.tab === 'calculators'));
   render();
 }
