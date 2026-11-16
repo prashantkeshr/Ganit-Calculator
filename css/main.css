@@ -527,6 +527,7 @@ footer.ganit-footer { grid-column: 1 / -1; }
 }
 .calc-history-feed::-webkit-scrollbar { width: 2px; }
 .calc-history-feed::-webkit-scrollbar-thumb { background: rgba(0,196,232,0.12); }
+.calc-history-feed.feed-empty { min-height: 0 !important; max-height: 0 !important; padding: 0 !important; }
 .calc-hist-sep {
   width: 100%; border: none; border-top: 1px dashed rgba(0,196,232,0.12);
   margin: 4px 0; opacity: 0.6;

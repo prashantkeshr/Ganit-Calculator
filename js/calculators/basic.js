@@ -71,6 +71,7 @@ export async function renderBasic(container) {
   renderFeed();
 
   function renderFeed() {
+    feedEl.classList.toggle('feed-empty', feedItems.length === 0 || feedItems.every(i => i.isSep));
     feedEl.innerHTML = feedItems.map((item, i) => {
       if (item.isSep) return `<hr class="calc-hist-sep" />`;
       const age = feedItems.length - 1 - i;

@@ -1,11 +1,11 @@
 /* ======================================================
    Ganit Calculator — Service Worker
    Calculator ~ by Ganit Technology | Powered by Dhurta Organisation
-   BETA v0.1.0
+   BETA v0.1.1
    Cache-first strategy with network fallback.
    ====================================================== */
 
-const CACHE_VERSION = 'ganit-v0.1.0';
+const CACHE_VERSION = 'ganit-v0.1.1';
 const STATIC_CACHE  = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 
@@ -32,6 +32,8 @@ const PRECACHE = [
   '/js/ui/sidebar.js',
   '/js/ui/command-palette.js',
   '/js/ui/history-panel.js',
+  '/js/ui/calc-tape.js',
+  '/js/ui/dashboard.js',
   '/js/calculators/basic.js',
   '/js/calculators/scientific.js',
   '/js/calculators/engineering.js',
